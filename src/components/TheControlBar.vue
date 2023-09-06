@@ -8,7 +8,7 @@ function scrollToTop() {
 }
 </script>
 <template>
-  <div class="fixed bottom-8 z-50 right-12">
+  <div class="fixed bottom-8 z-50 right-8">
     <VScaleTransition>
       <VBtn
         v-show="y >= 200"

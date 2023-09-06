@@ -11,11 +11,11 @@ defineProps({
 })
 </script>
 <template>
-  <v-parallax :src="src" :height="height">
+  <VParallax :src="src" :height="height">
     <div class="justify-center flex flex-col h-full items-center text-white">
       <slot />
     </div>
-  </v-parallax>
+  </VParallax>
 </template>
 
 <style scoped></style>

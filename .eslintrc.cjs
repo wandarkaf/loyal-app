@@ -7,8 +7,10 @@ module.exports = {
     'plugin:vue/vue3-essential',
     'eslint:recommended',
     '@vue/eslint-config-typescript',
-    '@vue/eslint-config-prettier/skip-formatting'
+    '@vue/eslint-config-prettier/skip-formatting',
+    'prettier'
   ],
+  plugins: ['prettier'],
   overrides: [
     {
       files: [
@@ -19,6 +21,12 @@ module.exports = {
       ]
     }
   ],
+  rules: {
+    "vue/component-name-in-template-casing": ["error", "PascalCase", {
+      "registeredComponentsOnly": true,
+      "ignores": []
+    }]
+  },
   parserOptions: {
     ecmaVersion: 'latest'
   }

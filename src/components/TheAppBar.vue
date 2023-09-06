@@ -27,13 +27,13 @@ const items = shallowRef([
       <BaseThemeSwitch />
       <VMenu width="150">
         <template v-slot:activator="{ props }">
-          <v-btn v-bind="props" icon="mdi-dots-vertical"></v-btn>
+          <VBtn v-bind="props" icon="mdi-dots-vertical"></VBtn>
         </template>
-        <v-list>
-          <v-list-item v-for="item in items" :key="item.id" :value="item.id">
-            <v-list-item-title>{{ item.title }}</v-list-item-title>
-          </v-list-item>
-        </v-list>
+        <VList>
+          <VListItem v-for="item in items" :key="item.id" :value="item.id">
+            <VListItemTitle>{{ item.title }}</VListItemTitle>
+          </VListItem>
+        </VList>
       </VMenu>
     </template>
   </v-app-bar>

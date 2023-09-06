@@ -1,13 +1,11 @@
 <script setup lang="ts"></script>
 <template>
-  <v-system-bar window color="primary">
-    <v-icon icon="mdi-message" class="me-2"></v-icon>
-
+  <vSystemBar window color="primary">
+    <vIcon icon="mdi-message" class="m-2" />
     <p>Sign up for free</p>
-
-    <v-spacer></v-spacer>
-    <v-icon>mdi-close</v-icon>
-  </v-system-bar>
+    <vSpacer />
+    <VIcon>mdi-close</VIcon>
+  </vSystemBar>
 </template>
 
 <style scoped></style>

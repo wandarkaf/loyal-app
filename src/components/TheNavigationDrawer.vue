@@ -17,8 +17,8 @@ const routes = shallowRef([
 ])
 </script>
 <template>
-  <v-navigation-drawer :modelValue="modelValue" temporary>
-    <v-list>
+  <VNavigationDrawer :modelValue="modelValue" temporary>
+    <VList>
       <VListItem
         v-for="route in routes"
         :key="route.id"
@@ -26,12 +26,12 @@ const routes = shallowRef([
         @click="$emit('update:modelValue', !modelValue)"
       >
         <template #prepend>
-          <v-icon>{{ route.icon }}</v-icon>
+          <VIcon>{{ route.icon }}</VIcon>
         </template>
         {{ route.name }}
       </VListItem>
-    </v-list>
-  </v-navigation-drawer>
+    </VList>
+  </VNavigationDrawer>
 </template>
 
 <style scoped></style>

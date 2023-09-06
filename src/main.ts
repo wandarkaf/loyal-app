@@ -1,4 +1,6 @@
 import './assets/main.css'
+import '@mdi/font/css/materialdesignicons.css'
+import 'vuetify/styles'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
@@ -6,16 +8,12 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 
-// Vuetify
-import '@mdi/font/css/materialdesignicons.css'
-import 'vuetify/styles'
 
-// Composables
+// Vuetify
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 
-// https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
 const vuetify =  createVuetify({
   components,
   directives,
@@ -31,14 +29,7 @@ const vuetify =  createVuetify({
   },
 })
 
-const app = createApp(App)
-
-/**
- * plugins/webfontloader.ts
- *
- * webfontloader documentation: https://github.com/typekit/webfontloader
- */
-
+// Webfontloader
 export async function loadFonts () {
   const webFontLoader = await import(/* webpackChunkName: "webfontloader" */'webfontloader')
 
@@ -50,6 +41,9 @@ export async function loadFonts () {
 }
 
 loadFonts()
+
+// init app
+const app = createApp(App)
 
 app.use(createPinia())
 app.use(router)
