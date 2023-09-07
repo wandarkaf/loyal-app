@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { shallowRef, reactive } from 'vue'
-import { useVuelidate } from '@vuelidate/core'
+import { useVuelidate, type ErrorObject } from '@vuelidate/core'
 import { required, minLength, maxLength, helpers } from '@vuelidate/validators'
 
 const initialState = {
@@ -28,8 +28,8 @@ const contactRules = {
 
 const v$ = useVuelidate(contactRules, contactFormState)
 
-function errorMessages(errors: any[]) {
-  return errors.map((e) => e.$message)
+function errorMessages(errors: ErrorObject[]): string[] {
+  return errors.map((e) => e.$message) as string[]
 }
 
 function clearForm() {
