@@ -8,9 +8,6 @@ dependencies:
   '@mdi/font':
     specifier: ^7.2.96
     version: 7.2.96
-  '@types/webfontloader':
-    specifier: ^1.6.35
-    version: 1.6.35
   '@vuelidate/core':
     specifier: ^2.0.3
     version: 2.0.3(vue@3.3.4)
@@ -52,6 +49,9 @@ devDependencies:
   '@types/node':
     specifier: ^18.17.5
     version: 18.17.14
+  '@types/webfontloader':
+    specifier: ^1.6.35
+    version: 1.6.35
   '@vitejs/plugin-vue':
     specifier: ^4.3.1
     version: 4.3.4(vite@4.4.9)(vue@3.3.4)
@@ -884,7 +884,7 @@ packages:
 
   /@types/webfontloader@1.6.35:
     resolution: {integrity: sha512-IJlrsiDWq6KghQ7tPlL5tcwSUyOxLDceT+AFUY7Ylj0Fcv3/h3QkANqQxZ0B5mEpEKxhTw76vDmvrruSMV9n9Q==}
-    dev: false
+    dev: true
 
   /@types/yauzl@2.10.0:
     resolution: {integrity: sha512-Cn6WYCm0tXv8p6k+A8PvbDG763EDpBoTzHdA+Q/MF6H3sapGjCm9NzoaJncJS9tUKSuCoDs9XHxYYsQDgxR6kw==}

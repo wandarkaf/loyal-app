@@ -28,7 +28,7 @@ const contactRules = {
 
 const v$ = useVuelidate(contactRules, contactFormState)
 
-function errorMessages(errors: ErrorObject[]): string[] {
+function errorMessages(errors: ErrorObject[]) {
   return errors.map((e) => e.$message) as string[]
 }
 
