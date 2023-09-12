@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import BaseParallax from '@/components/BaseParallax.vue'
 import BaseHero from '@/components/BaseHero.vue'
-import QRCode from './qr'
+import QRCode from './qrCode'
 
 const qrcode = ref<HTMLBodyElement | null>(null)
 const generateQRCode = () => {
