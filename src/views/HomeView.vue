@@ -1,19 +1,7 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import BaseParallax from '@/components/BaseParallax.vue'
 import BaseHero from '@/components/BaseHero.vue'
-import QRCode from './qrCode'
-
-const qrcode = ref<HTMLBodyElement | null>(null)
-const generateQRCode = () => {
-  console.log(QRCode)
-  if (!qrcode.value) return
-  new QRCode(qrcode.value, {
-    text: 'https://www.google.com',
-    width: 128,
-    height: 128
-  })
-}
+import QRcode from '@/components/QRcode.vue'
 </script>
 
 <template>
@@ -22,8 +10,7 @@ const generateQRCode = () => {
       <h2 class="mb-4 text-2xl">The best company</h2>
       <h4 class="">Let's help each other!</h4>
     </BaseParallax>
-    <VBtn @click="generateQRCode">Generate QR Code</VBtn>
-    <div ref="qrcode" id="qrcode"></div>
+    <QRcode />
     <BaseHero></BaseHero>
     <BaseHero></BaseHero>
 
@@ -51,3 +38,4 @@ const generateQRCode = () => {
     </BaseParallax>
   </div>
 </template>
+./QRPrinter ./QRIncubator
