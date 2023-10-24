@@ -13,7 +13,8 @@ defineEmits(['update:modelValue'])
 const routes = shallowRef([
   { id: 1, name: 'Home', to: '/', icon: 'mdi-home' },
   { id: 2, name: 'About', to: '/about', icon: 'mdi-information' },
-  { id: 3, name: 'Contact', to: '/contact', icon: 'mdi-email' }
+  { id: 3, name: 'Contact', to: '/contact', icon: 'mdi-email' },
+  { id: 4, name: 'Admin', to: '/admin', icon: 'mdi-account-supervisor' }
 ])
 </script>
 <template>

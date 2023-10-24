@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import { useUserStore } from '@/stores/UserStore'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -21,13 +22,26 @@ const router = createRouter({
       path: '/contact',
       name: 'contact',
       component: () => import('../views/ContactView.vue')
+    },
+    {
+      path: '/admin',
+      name: 'admin',
+      component: () => import('../views/AdminView.vue')
     }
   ],
-  scrollBehavior (to, from, savedPosition) {
-    return savedPosition || new Promise((resolve)=>{
-      setTimeout(()=> resolve({ top:0 }), 300)
-    })
+  scrollBehavior(to, from, savedPosition) {
+    return (
+      savedPosition ||
+      new Promise((resolve) => {
+        setTimeout(() => resolve({ top: 0 }), 300)
+      })
+    )
   }
+})
+
+router.beforeEach(() => {
+  console.log('beforeEach')
+  useUserStore().clearUnsubcribes()
 })
 
 export default router
