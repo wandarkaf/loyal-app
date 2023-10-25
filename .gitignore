@@ -30,6 +30,5 @@ coverage
 # Local Netlify folder
 .netlify
 
-
 # firebase
 serviceAccount.json

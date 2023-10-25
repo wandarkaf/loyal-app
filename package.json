@@ -15,7 +15,8 @@
     "format": "prettier --write src/",
     "docs:dev": "vitepress dev",
     "docs:build": "vitepress build",
-    "docs:preview": "vitepress preview"
+    "docs:preview": "vitepress preview",
+    "db:seed": "firebase firestore:delete --all-collections --force && ts-node firestoreImport.ts"
   },
   "dependencies": {
     "@mdi/font": "^7.3.67",
