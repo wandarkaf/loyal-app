@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import BaseThemeSwitch from './BaseThemeSwitch.vue'
 import { shallowRef } from 'vue'
+import { useUserStore } from '@/stores/UserStore'
+
+const userStore = useUserStore()
 
 defineProps({
   modelValue: {
@@ -24,6 +27,7 @@ const items = shallowRef([
     <v-app-bar-title>Companny Logo</v-app-bar-title>
 
     <template v-slot:append>
+      <p>{{ userStore.authId }}</p>
       <BaseThemeSwitch />
       <VMenu width="150">
         <template v-slot:activator="{ props }">

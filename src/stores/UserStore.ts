@@ -2,12 +2,14 @@ import { ref } from 'vue'
 import { defineStore, acceptHMRUpdate } from 'pinia'
 import { db, collection } from '@/firebase'
 import type { DocumentData, Unsubscribe } from 'firebase/firestore'
-import { doc, addDoc, updateDoc, deleteDoc, onSnapshot } from 'firebase/firestore'
+import { doc, setDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp } from 'firebase/firestore'
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
 
 export const useUserStore = defineStore(
   'UserStore',
   () => {
     // state
+    const authId = ref<string | null>(null)
     const users = ref<DocumentData>([])
     const unsubscribes = ref<Unsubscribe[]>([])
 
@@ -21,11 +23,30 @@ export const useUserStore = defineStore(
       unsubscribes.value = [...unsubscribes.value, unsubscribe]
     }
 
+    function fetchAuthUser(id: string) {
+      authId.value = id
+    }
+
+    async function registerUserWithEmailAndPassword(payload: any) {
+      const auth = getAuth()
+      const result = await createUserWithEmailAndPassword(auth, payload.email, payload.password)
+      createUser({ id: result.user.uid, ...payload })
+      fetchAuthUser(result.user.uid)
+    }
+
     async function createUser(payload: any) {
       try {
-        const userRef = await addDoc(collection(db, 'users'), payload)
-        console.log('Document written with ID: ', userRef.id)
-        users.value = [...users.value.map((user: any) => user), { id: userRef.id, ...payload }]
+        console.log('payload', payload)
+        const usernameLower = payload.username.toLowerCase()
+        const userRef = await setDoc(doc(db, 'users', payload.id), {
+          ...payload,
+          usernameLower,
+          registerAt: serverTimestamp(),
+          email: payload.email.toLowerCase()
+        })
+        users.value = [...users.value.map((user: any) => user), { ...payload }]
+        console.log(userRef)
+        return userRef
       } catch (e) {
         console.error('Error adding document: ', e)
       }
@@ -58,7 +79,17 @@ export const useUserStore = defineStore(
       unsubscribes.value = []
     }
 
-    return { users, fetchUsers, createUser, upsertUser, deleteUser, clearUnsubcribes }
+    return {
+      users,
+      authId,
+      fetchUsers,
+      createUser,
+      upsertUser,
+      deleteUser,
+      clearUnsubcribes,
+      registerUserWithEmailAndPassword,
+      fetchAuthUser
+    }
   },
   { historyEnabled: false }
 )

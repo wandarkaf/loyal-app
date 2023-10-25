@@ -7,6 +7,7 @@ userStore.fetchUsers()
 
 const payload = ref({
   name: 'Alonso Limon',
+  username: 'alonso.limon',
   email: 'lamas.alonso@gmail.com'
 })
 
