@@ -43,7 +43,7 @@ async function submitForm() {
 
   if (!isFormCorrect) return
   await authStore.signInUser(signInFormState)
-  router.push('/')
+  router.push('/loyalty')
 }
 </script>
 

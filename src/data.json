@@ -32,12 +32,29 @@
       "type": "stamp",
       "style": {
         "backgroundColor": "#222640",
-        "textColor": "#F2B705",
+        "color": "#F2B705",
+        "borderWidth": "2px",
         "borderColor": "#D94032",
         "stampActiveColor": "#F29F05",
         "stampInactiveColor": "#F2B705"
       },
       "maxCount": 10
+    },
+    {
+      "id": "-card2",
+      "userId": "38St7Q8Zi2N1SPa5ahzssq9kbyA2",
+      "name": "Express card",
+      "description": "Another storedescription",
+      "type": "stamp",
+      "style": {
+        "backgroundColor": "#D9D9D9",
+        "color": "#0D0D0D",
+        "borderWidth": "2px",
+        "borderColor": "#400219",
+        "stampActiveColor": "#0D0D0D",
+        "stampInactiveColor": "#8C8C8C"
+      },
+      "maxCount": 8
     }
   ],
   "loyalties": [
