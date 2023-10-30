@@ -9,27 +9,22 @@ const authStore = useAuthStore()
 const router = useRouter()
 
 const initialState = {
-  name: '',
   email: '',
-  username: '',
-  avatar: '',
   password: ''
 }
 
 const loading = shallowRef(false)
 
-const registerFormState = reactive({ ...initialState })
-const contactRules = {
-  name: { required },
+const signInFormState = reactive({ ...initialState })
+const signInRules = {
   email: {
     required,
     email
   },
-  username: { required },
   password: { required }
 }
 
-const v$ = useVuelidate(contactRules, registerFormState)
+const v$ = useVuelidate(signInRules, signInFormState)
 
 function errorMessages(errors: ErrorObject[]) {
   return errors.map((e) => e.$message) as string[]
@@ -37,10 +32,8 @@ function errorMessages(errors: ErrorObject[]) {
 
 function clearForm() {
   v$.value.$reset()
-  registerFormState.name = ''
-  registerFormState.email = ''
-  registerFormState.username = ''
-  registerFormState.avatar = ''
+  signInFormState.email = ''
+  signInFormState.password = ''
 }
 
 async function submitForm() {
@@ -49,14 +42,7 @@ async function submitForm() {
   loading.value = false
 
   if (!isFormCorrect) return
-
-  console.log('submitForm')
-  await authStore.registerUserWithEmailAndPassword(registerFormState)
-  router.push('/')
-}
-
-async function registerWithGoogle() {
-  await authStore.signInWithGoogle()
+  await authStore.signInUser(signInFormState)
   router.push('/')
 }
 </script>
@@ -64,30 +50,8 @@ async function registerWithGoogle() {
 <template>
   <v-container>
     <VForm @submit.prevent class="my-10 flex flex-col gap-4">
-      <div class="flex flex-row gap-4">
-        <div class="basis-1/2">
-          <VTextField
-            v-model="registerFormState.name"
-            :errorMessages="errorMessages(v$.name.$errors)"
-            label="Name"
-            required
-            @input="v$.name.$touch"
-            @blur="v$.name.$touch"
-          />
-        </div>
-        <div class="basis-1/2">
-          <VTextField
-            v-model="registerFormState.username"
-            :errorMessages="errorMessages(v$.username.$errors)"
-            label="Username"
-            required
-            @input="v$.username.$touch"
-            @blur="v$.username.$touch"
-          />
-        </div>
-      </div>
       <VTextField
-        v-model="registerFormState.email"
+        v-model="signInFormState.email"
         :errorMessages="errorMessages(v$.email.$errors)"
         label="email"
         required
@@ -95,7 +59,7 @@ async function registerWithGoogle() {
         @blur="v$.email.$touch"
       />
       <VTextField
-        v-model="registerFormState.password"
+        v-model="signInFormState.password"
         :errorMessages="errorMessages(v$.password.$errors)"
         label="Password"
         type="password"
@@ -105,10 +69,9 @@ async function registerWithGoogle() {
       />
       <div class="flex gap-4 justify-end">
         <VBtn @click="clearForm">Clear</VBtn>
-        <VBtn @click="submitForm" color="primary" :loading="loading">Register</VBtn>
+        <VBtn @click="submitForm" color="primary" :loading="loading">Signin</VBtn>
       </div>
     </VForm>
-    <VBtn @click="registerWithGoogle" prependIcon="mdi-google">Sign up with google</VBtn>
   </v-container>
 </template>
 <style scoped></style>

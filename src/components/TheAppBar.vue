@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import BaseThemeSwitch from './BaseThemeSwitch.vue'
 import { shallowRef } from 'vue'
-import { useUserStore } from '@/stores/UserStore'
+import { useAuthStore } from '@/stores/AuthStore'
 
-const userStore = useUserStore()
+const authStore = useAuthStore()
 
 defineProps({
   modelValue: {
@@ -16,8 +16,8 @@ defineEmits(['update:modelValue'])
 
 const items = shallowRef([
   { id: 1, title: 'Profile' },
-  { id: 2, title: 'Settings' },
-  { id: 3, title: 'Logout' }
+  { id: 2, title: 'Settings' }
+  // { id: 3, title: 'Logout' }
 ])
 </script>
 <template>
@@ -27,18 +27,34 @@ const items = shallowRef([
     <v-app-bar-title>Companny Logo</v-app-bar-title>
 
     <template v-slot:append>
-      <p>{{ userStore.authId }}</p>
       <BaseThemeSwitch />
-      <VMenu width="150">
+      <VMenu v-if="authStore.authUser" width="150">
         <template v-slot:activator="{ props }">
-          <VBtn v-bind="props" icon="mdi-dots-vertical"></VBtn>
+          <VBtn v-bind="props" append-icon="mdi-dots-vertical">
+            <v-avatar>
+              <v-img
+                v-if="authStore.authUser.photoURL"
+                :src="authStore.authUser.photoURL"
+                alt="Profile picture"
+              ></v-img>
+              <v-icon v-else icon="mdi-account-circle"></v-icon>
+            </v-avatar>
+            {{ authStore.authUser?.displayName || authStore.authUser?.email }}
+          </VBtn>
         </template>
         <VList>
           <VListItem v-for="item in items" :key="item.id" :value="item.id">
             <VListItemTitle>{{ item.title }}</VListItemTitle>
           </VListItem>
+          <VListItem @click="authStore.signOutUser()">
+            <VListItemTitle>Logout</VListItemTitle>
+          </VListItem>
         </VList>
       </VMenu>
+      <template v-else>
+        <v-btn to="/signin"> Sign In </v-btn>
+        <V-btn to="/register"> Register </V-btn>
+      </template>
     </template>
   </v-app-bar>
 </template>
