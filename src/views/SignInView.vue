@@ -3,10 +3,11 @@ import { shallowRef, reactive } from 'vue'
 import { useVuelidate, type ErrorObject } from '@vuelidate/core'
 import { required, email } from '@vuelidate/validators'
 import { useAuthStore } from '@/stores/AuthStore'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 
 const authStore = useAuthStore()
 const router = useRouter()
+const route = useRoute()
 
 const initialState = {
   email: '',
@@ -43,7 +44,13 @@ async function submitForm() {
 
   if (!isFormCorrect) return
   await authStore.signInUser(signInFormState)
-  router.push('/loyalty')
+  successRedirect()
+}
+
+function successRedirect() {
+  console.log('redirecting')
+  const redirectTo = (route.query.redirectTo as string) || { name: 'loyaltiy' }
+  router.push(redirectTo)
 }
 </script>
 

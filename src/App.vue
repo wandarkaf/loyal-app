@@ -17,7 +17,7 @@ const drawer = shallowRef(false)
     <TheAppBar v-model="drawer" />
     <TheNavigationDrawer v-model="drawer" />
     <VMain>
-      <RouterView v-slot="{ Component }">
+      <RouterView v-slot="{ Component }" :key="$route.path">
         <VFadeTransition leave-absolute>
           <component :is="Component" :key="$route.path"></component>
         </VFadeTransition>

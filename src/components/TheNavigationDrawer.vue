@@ -22,7 +22,7 @@ const routes = computed(() => {
   ]
   const protectedRoutes = authStore.authUser
     ? [
-        { id: 8, name: 'Loyalty', to: '/loyalty', icon: 'mdi-wallet-membership' },
+        { id: 8, name: 'Loyalty', to: '/loyalties', icon: 'mdi-wallet-membership' },
         { id: 4, name: 'Admin', to: '/admin', icon: 'mdi-account-supervisor' }
       ]
     : []

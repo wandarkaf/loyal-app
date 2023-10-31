@@ -8,7 +8,8 @@ import {
   signInWithEmailAndPassword,
   signOut,
   GoogleAuthProvider,
-  signInWithPopup
+  signInWithPopup,
+  onAuthStateChanged
 } from 'firebase/auth'
 import type { User } from 'firebase/auth'
 import type { Unsubscribe } from 'firebase/firestore'
@@ -19,9 +20,28 @@ export const useAuthStore = defineStore(
   'AuthStore',
   () => {
     const userStore = useUserStore()
-
     const authUser = ref<User | null>(null)
     const authUserUnsubscribe = ref<Unsubscribe | null>(null)
+    const authObserverUnsubscribe = ref<Unsubscribe | null>(null)
+
+    function initAuthentication() {
+      if (authObserverUnsubscribe.value) return
+      return new Promise((resolve) => {
+        const auth = getAuth()
+        const unsubscribe = onAuthStateChanged(auth, async (user) => {
+          console.log('👣 the user has changed')
+          authObserverUnsubscribe.value = unsubscribe
+
+          if (user) {
+            await fetchAuthUser(user)
+            resolve(user)
+          } else {
+            resolve(null)
+          }
+        })
+        authObserverUnsubscribe.value = unsubscribe
+      })
+    }
 
     function fetchAuthUser(payload: User | null) {
       authUser.value = payload
@@ -66,6 +86,7 @@ export const useAuthStore = defineStore(
 
     return {
       authUser,
+      initAuthentication,
       fetchAuthUser,
       registerUserWithEmailAndPassword,
       signInUser,

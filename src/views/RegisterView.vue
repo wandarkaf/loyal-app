@@ -52,12 +52,12 @@ async function submitForm() {
 
   console.log('submitForm')
   await authStore.registerUserWithEmailAndPassword(registerFormState)
-  router.push('/loyalty')
+  router.push('/loyalties')
 }
 
 async function registerWithGoogle() {
   await authStore.signInWithGoogle()
-  router.push('/loyalty')
+  router.push('/loyalties')
 }
 </script>
 

@@ -2,8 +2,10 @@
 import BaseThemeSwitch from './BaseThemeSwitch.vue'
 import { shallowRef } from 'vue'
 import { useAuthStore } from '@/stores/AuthStore'
+import { useRouter } from 'vue-router'
 
 const authStore = useAuthStore()
+const router = useRouter()
 
 defineProps({
   modelValue: {
@@ -19,6 +21,11 @@ const items = shallowRef([
   { id: 2, title: 'Settings' }
   // { id: 3, title: 'Logout' }
 ])
+
+const signOutUser = () => {
+  authStore.signOutUser()
+  router.push('/')
+}
 </script>
 <template>
   <v-app-bar>
@@ -46,7 +53,7 @@ const items = shallowRef([
           <VListItem v-for="item in items" :key="item.id" :value="item.id">
             <VListItemTitle>{{ item.title }}</VListItemTitle>
           </VListItem>
-          <VListItem @click="authStore.signOutUser()">
+          <VListItem @click="signOutUser">
             <VListItemTitle>Logout</VListItemTitle>
           </VListItem>
         </VList>
