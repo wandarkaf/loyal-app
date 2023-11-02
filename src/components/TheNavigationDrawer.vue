@@ -20,14 +20,17 @@ const routes = computed(() => {
     { id: 3, name: 'Contact', to: '/contact', icon: 'mdi-email' },
     { id: 7, name: 'Cards', to: '/cards', icon: 'mdi-card-multiple' }
   ]
-  const protectedRoutes = authStore.authUser
-    ? [
-        { id: 8, name: 'Loyalty', to: '/loyalties', icon: 'mdi-wallet-membership' },
-        { id: 4, name: 'Admin', to: '/admin', icon: 'mdi-account-supervisor' }
-      ]
-    : []
+  const commerceRoleRoutes =
+    authStore.authUser?.role === 'commerce'
+      ? [{ id: 4, name: 'Admin', to: '/admin', icon: 'mdi-account-supervisor' }]
+      : []
 
-  return [...defaultRoutes, ...protectedRoutes]
+  const casualRoleRoutes =
+    authStore.authUser?.role === 'casual'
+      ? [{ id: 5, name: 'Loyalty', to: '/loyalties', icon: 'mdi-wallet-membership' }]
+      : []
+
+  return [...defaultRoutes, ...casualRoleRoutes, ...commerceRoleRoutes]
 })
 </script>
 <template>

@@ -2,7 +2,15 @@ import { ref } from 'vue'
 import { defineStore, acceptHMRUpdate } from 'pinia'
 import { db, collection } from '@/firebase'
 import type { DocumentData, Unsubscribe } from 'firebase/firestore'
-import { doc, setDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp } from 'firebase/firestore'
+import {
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+  deleteDoc,
+  onSnapshot,
+  serverTimestamp
+} from 'firebase/firestore'
 
 export const useUserStore = defineStore(
   'UserStore',
@@ -19,6 +27,12 @@ export const useUserStore = defineStore(
         })
       })
       unsubscribes.value = [...unsubscribes.value, unsubscribe]
+    }
+
+    async function fetchUser(id: string) {
+      const userRef = doc(db, 'users', id)
+      const userDocument = await getDoc(userRef)
+      return userDocument.data()
     }
 
     async function createUser(payload: any) {
@@ -67,6 +81,7 @@ export const useUserStore = defineStore(
     return {
       users,
       fetchUsers,
+      fetchUser,
       createUser,
       upsertUser,
       deleteUser,

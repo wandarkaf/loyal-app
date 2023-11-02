@@ -101,11 +101,12 @@ const router = createRouter({
 
 router.beforeEach(async (to, _from, next) => {
   await useAuthStore().initAuthentication()
-  useUserStore().clearUnsubcribes()
-  if (to.meta.requiresAuth && !useAuthStore().authUser) {
+  await useUserStore().clearUnsubcribes()
+  const authUser = await useAuthStore().authUser
+  if (to.meta.requiresAuth && !authUser) {
     next({ name: 'signin', query: { redirectTo: to.path } })
   }
-  if (to.meta.requiresGuest && useAuthStore().authUser) {
+  if (to.meta.requiresGuest && authUser) {
     next({ name: 'home' })
   }
   next()

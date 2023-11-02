@@ -9,7 +9,7 @@
       "registeredAt": 1594632260,
       "username": "wandarkaf",
       "usernameLower": "wandarkaf",
-      "id": "38St7Q8Zi2N1SPa5ahzssq9kbyp1"
+      "id": "4TWqh8Cm1OOmadsl4O8AY7Dr3LB3"
     },
     {
       "avatar": "https://i.imgur.com/WPSrfGm.jpg",
@@ -20,13 +20,13 @@
       "registeredAt": 1594632260,
       "username": "orsika",
       "usernameLower": "orsika",
-      "id": "38St7Q8Zi2N1SPa5ahzssq9kbyA2"
+      "id": "EDDNPOuWSSfE43NfSkPbyt9vHOe2"
     }
   ],
   "cards": [
     {
       "id": "-card1",
-      "userId": "38St7Q8Zi2N1SPa5ahzssq9kbyA2",
+      "userId": "EDDNPOuWSSfE43NfSkPbyt9vHOe2",
       "name": "755 loyalty  card",
       "description": "755 loyalty card description",
       "type": "stamp",
@@ -42,7 +42,7 @@
     },
     {
       "id": "-card2",
-      "userId": "38St7Q8Zi2N1SPa5ahzssq9kbyA2",
+      "userId": "EDDNPOuWSSfE43NfSkPbyt9vHOe2",
       "name": "Express card",
       "description": "Another storedescription",
       "type": "stamp",
@@ -62,19 +62,15 @@
       "id": "-loyalty1",
       "cardId": "-card1",
       "userId": "4TWqh8Cm1OOmadsl4O8AY7Dr3LB3",
-      "history": [
-        {
-          "createdAt": 1594632260,
-          "count": 1,
-          "canBeClaimed": false,
-          "isClaimed": false,
-          "edited": {
-            "at": 1594037546,
-            "by": "38St7Q8Zi2N1SPa5ahzssq9kbyA2",
-            "action": "stamp"
-          }
-        }
-      ]
+      "canBeClaimed": false,
+      "isClaimed": false,
+      "stamps": 1,
+      "createdAt": 1594037546,
+      "edited": {
+        "at": 1594037546,
+        "by": "EDDNPOuWSSfE43NfSkPbyt9vHOe2",
+        "action": "stamp"
+      }
     }
   ]
 }

@@ -4,7 +4,6 @@ import { db, collection } from '@/firebase'
 import type { DocumentData, Unsubscribe } from 'firebase/firestore'
 import {
   doc,
-  getDoc,
   setDoc,
   updateDoc,
   deleteDoc,
@@ -20,22 +19,26 @@ export const useLoyatyStore = defineStore(
     // state
     const loyalties = ref<DocumentData>([])
     const unsubscribes = ref<Unsubscribe[]>([])
+    // const loyaltyCardsIds = ref<string[]>([])
 
     async function fetchLoyalties(userId: string) {
-      const q = await query(collection(db, 'loyalties'), where('userId', '==', userId))
+      const loyaltyQuery = await query(collection(db, 'loyalties'), where('userId', '==', userId))
 
-      const unsubscribe = onSnapshot(q, (queryDocuments) => {
-        loyalties.value = queryDocuments.docs.map((document) => {
-          //   const cardDocumentRef = doc(db, 'cards', document.data().cardId)
-          //   const cardDocument = await getDoc(cardDocumentRef)
+      const unsubscribe = onSnapshot(loyaltyQuery, async (queryDocuments) => {
+        loyalties.value = await queryDocuments.docs.map((document) => {
+          // const cardDocumentRef = doc(db, 'cards', document.data().cardId)
+          // const cardDocument = await getDoc(cardDocumentRef)
+          // loyaltyCardsIds.value = [...loyaltyCardsIds.value, document.data().cardId]
 
-          //   return { id: document.id, ...document.data(), card: cardDocument.data() }
           if (document.exists()) {
+            // return { id: document.id, ...document.data(), card: cardDocument.data() }
             return { id: document.id, ...document.data() }
           }
           return null
         })
       })
+
+      // console.log('loyaltyCardsIds', loyaltyCardsIds.value)
       unsubscribes.value = [...unsubscribes.value, unsubscribe]
     }
 

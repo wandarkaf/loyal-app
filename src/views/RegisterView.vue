@@ -50,7 +50,6 @@ async function submitForm() {
 
   if (!isFormCorrect) return
 
-  console.log('submitForm')
   await authStore.registerUserWithEmailAndPassword(registerFormState)
   router.push('/loyalties')
 }

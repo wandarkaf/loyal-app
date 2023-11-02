@@ -2,7 +2,16 @@ import { ref } from 'vue'
 import { defineStore, acceptHMRUpdate } from 'pinia'
 import { db, collection } from '@/firebase'
 import type { DocumentData, Unsubscribe } from 'firebase/firestore'
-import { doc, setDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp } from 'firebase/firestore'
+import {
+  doc,
+  setDoc,
+  updateDoc,
+  deleteDoc,
+  onSnapshot,
+  serverTimestamp,
+  query,
+  where
+} from 'firebase/firestore'
 
 export const useCardStore = defineStore(
   'CardStore',
@@ -11,12 +20,24 @@ export const useCardStore = defineStore(
     const cards = ref<DocumentData>([])
     const unsubscribes = ref<Unsubscribe[]>([])
 
-    async function fetchCards() {
+    async function fetchAllCards() {
       const unsubscribe = onSnapshot(collection(db, 'cards'), (doc) => {
         cards.value = doc.docs.map((doc) => {
           return { id: doc.id, ...doc.data() }
         })
       })
+      unsubscribes.value = [...unsubscribes.value, unsubscribe]
+    }
+
+    async function fetchCards(ids: string[]) {
+      const unsubscribe = onSnapshot(
+        query(collection(db, 'cards'), where('id', 'in', ids)),
+        (doc) => {
+          cards.value = doc.docs.map((doc) => {
+            return { id: doc.id, ...doc.data() }
+          })
+        }
+      )
       unsubscribes.value = [...unsubscribes.value, unsubscribe]
     }
 
@@ -66,6 +87,7 @@ export const useCardStore = defineStore(
     return {
       cards,
       fetchCards,
+      fetchAllCards,
       createCard,
       upsertCard,
       deleteCard,

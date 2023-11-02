@@ -48,8 +48,7 @@ async function submitForm() {
 }
 
 function successRedirect() {
-  console.log('redirecting')
-  const redirectTo = (route.query.redirectTo as string) || { name: 'loyaltiy' }
+  const redirectTo = (route.query.redirectTo as string) || { name: 'loyalty' }
   router.push(redirectTo)
 }
 </script>

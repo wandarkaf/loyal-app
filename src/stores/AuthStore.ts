@@ -43,8 +43,13 @@ export const useAuthStore = defineStore(
       })
     }
 
-    function fetchAuthUser(payload: User | null) {
-      authUser.value = payload
+    async function fetchAuthUser(payload: User | null) {
+      if (!payload) {
+        authUser.value = payload
+      } else {
+        const collectionUser = await userStore.fetchUser(payload?.uid || '')
+        authUser.value = { ...payload, role: collectionUser.role }
+      }
     }
 
     async function registerUserWithEmailAndPassword(payload: any) {
@@ -73,7 +78,14 @@ export const useAuthStore = defineStore(
       // check if user exists in db
       const userRef = await getDoc(doc(db, 'users', user.uid))
       if (!userRef.exists()) {
-        userStore.createUser({ id: user.uid, username: user.displayName, email: user.email })
+        userStore.createUser({
+          id: user.uid,
+          username: user.displayName,
+          email: user.email,
+          avatar: user.photoURL
+        })
+      } else {
+        userStore.upsertUser(user.uid, { avatar: user.photoURL, email: user.email })
       }
     }
 
