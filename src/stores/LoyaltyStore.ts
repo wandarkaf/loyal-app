@@ -5,7 +5,6 @@ import type { DocumentData, Unsubscribe } from 'firebase/firestore'
 import {
   doc,
   getDoc,
-  getDocs,
   setDoc,
   updateDoc,
   deleteDoc,
@@ -22,10 +21,15 @@ export const useLoyaltyStore = defineStore(
     // state
     const loyalties = ref<DocumentData>([])
     const unsubscribes = ref<Unsubscribe[]>([])
-    // const loyaltyCardsIds = ref<string[]>([])
 
-    async function fetchLoyalties(userId: string) {
-      const loyaltyQuery = await query(collection(db, 'loyalties'), where('userId', '==', userId))
+    async function fetchLoyaltiesByUserId(userId: string) {
+      const userRef = await getDoc(doc(db, `users/${userId}`))
+      const userLoyalties = userRef.data()?.loyalties
+
+      const loyaltyQuery = await query(
+        collection(db, 'loyalties'),
+        where(documentId(), 'in', userLoyalties)
+      )
 
       const unsubscribe = onSnapshot(loyaltyQuery, async (queryDocuments) => {
         loyalties.value = await queryDocuments.docs.map((document) => {
@@ -48,7 +52,7 @@ export const useLoyaltyStore = defineStore(
     async function fetchLoyaltiesByCardId(cardId: string) {
       try {
         const cardRef = await getDoc(doc(db, `cards/${cardId}`))
-        const loyaltyArray = cardRef.data() !== undefined ? cardRef.data().loyalties : []
+        const loyaltyArray = cardRef.data() !== undefined ? cardRef.data()?.loyalties : []
         const loyaltyRefs = await query(
           collection(db, 'loyalties'),
           where(documentId(), 'in', loyaltyArray)
@@ -110,7 +114,7 @@ export const useLoyaltyStore = defineStore(
 
     return {
       loyalties,
-      fetchLoyalties,
+      fetchLoyaltiesByUserId,
       fetchLoyaltiesByCardId,
       createLoyalty,
       upsertLoyalty,
