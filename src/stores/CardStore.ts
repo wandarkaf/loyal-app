@@ -4,13 +4,15 @@ import { db, collection } from '@/firebase'
 import type { DocumentData, Unsubscribe } from 'firebase/firestore'
 import {
   doc,
+  getDoc,
   setDoc,
   updateDoc,
   deleteDoc,
   onSnapshot,
   serverTimestamp,
   query,
-  where
+  where,
+  documentId
 } from 'firebase/firestore'
 
 export const useCardStore = defineStore(
@@ -32,6 +34,20 @@ export const useCardStore = defineStore(
     async function fetchCards(ids: string[]) {
       const unsubscribe = onSnapshot(
         query(collection(db, 'cards'), where('id', 'in', ids)),
+        (doc) => {
+          cards.value = doc.docs.map((doc) => {
+            return { id: doc.id, ...doc.data() }
+          })
+        }
+      )
+      unsubscribes.value = [...unsubscribes.value, unsubscribe]
+    }
+
+    async function fetchCardsByUserId(id: string) {
+      const userRef = await getDoc(doc(db, `users/${id}`))
+
+      const unsubscribe = onSnapshot(
+        query(collection(db, 'cards'), where(documentId(), 'in', userRef.data()?.cards)),
         (doc) => {
           cards.value = doc.docs.map((doc) => {
             return { id: doc.id, ...doc.data() }
@@ -88,6 +104,7 @@ export const useCardStore = defineStore(
       cards,
       fetchCards,
       fetchAllCards,
+      fetchCardsByUserId,
       createCard,
       upsertCard,
       deleteCard,

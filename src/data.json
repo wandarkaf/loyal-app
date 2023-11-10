@@ -9,7 +9,9 @@
       "registeredAt": 1594632260,
       "username": "wandarkaf",
       "usernameLower": "wandarkaf",
-      "id": "4TWqh8Cm1OOmadsl4O8AY7Dr3LB3"
+      "id": "4TWqh8Cm1OOmadsl4O8AY7Dr3LB3",
+      "loyalties": ["-loyalty1", "-loyalty2"],
+      "cards": ["-card1"]
     },
     {
       "avatar": "https://i.imgur.com/WPSrfGm.jpg",
@@ -20,13 +22,16 @@
       "registeredAt": 1594632260,
       "username": "orsika",
       "usernameLower": "orsika",
-      "id": "EDDNPOuWSSfE43NfSkPbyt9vHOe2"
+      "id": "EDDNPOuWSSfE43NfSkPbyt9vHOe2",
+      "loyalties": [],
+      "cards": ["-card1", "-card2"]
     }
   ],
   "cards": [
     {
       "id": "-card1",
-      "userId": "EDDNPOuWSSfE43NfSkPbyt9vHOe2",
+      "loyalties": ["-loyalty1", "-loyalty2"],
+      "users": ["EDDNPOuWSSfE43NfSkPbyt9vHOe2"],
       "name": "755 loyalty  card",
       "description": "755 loyalty card description",
       "type": "stamp",
@@ -38,12 +43,17 @@
         "stampActiveColor": "#F29F05",
         "stampInactiveColor": "#F2B705"
       },
+      "location": {
+        "lat": 47.497913,
+        "lng": 19.040236
+      },
       "maxCount": 10
     },
     {
       "id": "-card2",
-      "userId": "EDDNPOuWSSfE43NfSkPbyt9vHOe2",
       "name": "Express card",
+      "loyalties": [],
+      "users": [],
       "description": "Another storedescription",
       "type": "stamp",
       "style": {
@@ -54,17 +64,35 @@
         "stampActiveColor": "#0D0D0D",
         "stampInactiveColor": "#8C8C8C"
       },
+      "location": {
+        "lat": 47.497913,
+        "lng": 19.040236
+      },
       "maxCount": 8
     }
   ],
   "loyalties": [
     {
       "id": "-loyalty1",
-      "cardId": "-card1",
       "userId": "4TWqh8Cm1OOmadsl4O8AY7Dr3LB3",
+      "cardId": "-card1",
       "canBeClaimed": false,
       "isClaimed": false,
       "stamps": 1,
+      "createdAt": 1594037546,
+      "edited": {
+        "at": 1594037546,
+        "by": "EDDNPOuWSSfE43NfSkPbyt9vHOe2",
+        "action": "stamp"
+      }
+    },
+    {
+      "id": "-loyalty2",
+      "userId": "4TWqh8Cm1OOmadsl4O8AY7Dr3LB3",
+      "cardId": "-card1",
+      "canBeClaimed": false,
+      "isClaimed": false,
+      "stamps": 3,
       "createdAt": 1594037546,
       "edited": {
         "at": 1594037546,

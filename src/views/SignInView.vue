@@ -49,6 +49,7 @@ async function submitForm() {
 
 function successRedirect() {
   const redirectTo = (route.query.redirectTo as string) || { name: 'loyalty' }
+  // TODO: vue-router issue with middleware
   router.push(redirectTo)
 }
 </script>

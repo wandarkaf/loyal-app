@@ -4,16 +4,19 @@ import { db, collection } from '@/firebase'
 import type { DocumentData, Unsubscribe } from 'firebase/firestore'
 import {
   doc,
+  getDoc,
+  getDocs,
   setDoc,
   updateDoc,
   deleteDoc,
   onSnapshot,
   serverTimestamp,
   query,
-  where
+  where,
+  documentId
 } from 'firebase/firestore'
 
-export const useLoyatyStore = defineStore(
+export const useLoyaltyStore = defineStore(
   'LoyaltyStore',
   () => {
     // state
@@ -40,6 +43,31 @@ export const useLoyatyStore = defineStore(
 
       // console.log('loyaltyCardsIds', loyaltyCardsIds.value)
       unsubscribes.value = [...unsubscribes.value, unsubscribe]
+    }
+
+    async function fetchLoyaltiesByCardId(cardId: string) {
+      try {
+        const cardRef = await getDoc(doc(db, `cards/${cardId}`))
+        const loyaltyArray = cardRef.data() !== undefined ? cardRef.data().loyalties : []
+        const loyaltyRefs = await query(
+          collection(db, 'loyalties'),
+          where(documentId(), 'in', loyaltyArray)
+        )
+
+        const unsubscribe = onSnapshot(loyaltyRefs, (loyaltyDocuments) => {
+          console.log('loyaltyDocuments', loyaltyDocuments.docs)
+          loyalties.value = loyaltyDocuments.docs.map((document) => {
+            if (document.exists()) {
+              return { id: document.id, ...document.data() }
+            }
+            return null
+          })
+        })
+        unsubscribes.value = [...unsubscribes.value, unsubscribe]
+      } catch (e) {
+        console.error('Error getting document: ', e)
+        loyalties.value = []
+      }
     }
 
     async function createLoyalty(payload: any) {
@@ -83,6 +111,7 @@ export const useLoyatyStore = defineStore(
     return {
       loyalties,
       fetchLoyalties,
+      fetchLoyaltiesByCardId,
       createLoyalty,
       upsertLoyalty,
       deleteLoyalty,
@@ -93,5 +122,5 @@ export const useLoyatyStore = defineStore(
 )
 
 if (import.meta.hot) {
-  import.meta.hot.accept(acceptHMRUpdate(useLoyatyStore, import.meta.hot))
+  import.meta.hot.accept(acceptHMRUpdate(useLoyaltyStore, import.meta.hot))
 }
