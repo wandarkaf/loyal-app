@@ -9,11 +9,10 @@ const authStore = useAuthStore()
 const loyaltyStore = useLoyaltyStore()
 const cardStore = useCardStore()
 
-loyaltyStore.fetchLoyaltiesByUserId(authStore.authUser?.uid || '')
-cardStore.fetchCardsByUserId(authStore.authUser?.uid || '')
+loyaltyStore.fetchLoyalties(authStore.authUser?.loyalties || [])
+cardStore.fetchCards(authStore.authUser?.cards || [])
 </script>
 <template>
-  {{ authStore.authUser }}
   <VContainer>
     <div v-for="loyalty in loyaltyStore.loyalties" :key="loyalty.id">
       <div class="flex gap-4">

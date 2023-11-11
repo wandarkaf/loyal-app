@@ -48,7 +48,7 @@ export const useAuthStore = defineStore(
         authUser.value = payload
       } else {
         const collectionUser = await userStore.fetchUser(payload?.uid || '')
-        authUser.value = { ...payload, role: collectionUser.role }
+        authUser.value = { ...payload, ...collectionUser }
       }
     }
 

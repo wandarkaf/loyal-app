@@ -31,23 +31,9 @@ export const useCardStore = defineStore(
       unsubscribes.value = [...unsubscribes.value, unsubscribe]
     }
 
-    async function fetchCards(ids: string[]) {
+    async function fetchCards(ids: string[] | null) {
       const unsubscribe = onSnapshot(
-        query(collection(db, 'cards'), where('id', 'in', ids)),
-        (doc) => {
-          cards.value = doc.docs.map((doc) => {
-            return { id: doc.id, ...doc.data() }
-          })
-        }
-      )
-      unsubscribes.value = [...unsubscribes.value, unsubscribe]
-    }
-
-    async function fetchCardsByUserId(id: string) {
-      const userRef = await getDoc(doc(db, `users/${id}`))
-
-      const unsubscribe = onSnapshot(
-        query(collection(db, 'cards'), where(documentId(), 'in', userRef.data()?.cards)),
+        query(collection(db, 'cards'), where(documentId(), 'in', ids)),
         (doc) => {
           cards.value = doc.docs.map((doc) => {
             return { id: doc.id, ...doc.data() }
@@ -104,7 +90,6 @@ export const useCardStore = defineStore(
       cards,
       fetchCards,
       fetchAllCards,
-      fetchCardsByUserId,
       createCard,
       upsertCard,
       deleteCard,

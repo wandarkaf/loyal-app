@@ -8,7 +8,7 @@ import { RouterLink } from 'vue-router'
 const authStore = useAuthStore()
 const cardStore = useCardStore()
 
-cardStore.fetchCardsByUserId(authStore.authUser?.uid || '')
+cardStore.fetchCards(authStore.authUser?.cards || [])
 </script>
 
 <template>

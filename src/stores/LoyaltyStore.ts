@@ -22,30 +22,17 @@ export const useLoyaltyStore = defineStore(
     const loyalties = ref<DocumentData>([])
     const unsubscribes = ref<Unsubscribe[]>([])
 
-    async function fetchLoyaltiesByUserId(userId: string) {
-      const userRef = await getDoc(doc(db, `users/${userId}`))
-      const userLoyalties = userRef.data()?.loyalties
-
-      const loyaltyQuery = await query(
-        collection(db, 'loyalties'),
-        where(documentId(), 'in', userLoyalties)
-      )
+    async function fetchLoyalties(ids: string[] | null) {
+      const loyaltyQuery = await query(collection(db, 'loyalties'), where(documentId(), 'in', ids))
 
       const unsubscribe = onSnapshot(loyaltyQuery, async (queryDocuments) => {
         loyalties.value = await queryDocuments.docs.map((document) => {
-          // const cardDocumentRef = doc(db, 'cards', document.data().cardId)
-          // const cardDocument = await getDoc(cardDocumentRef)
-          // loyaltyCardsIds.value = [...loyaltyCardsIds.value, document.data().cardId]
-
           if (document.exists()) {
-            // return { id: document.id, ...document.data(), card: cardDocument.data() }
             return { id: document.id, ...document.data() }
           }
           return null
         })
       })
-
-      // console.log('loyaltyCardsIds', loyaltyCardsIds.value)
       unsubscribes.value = [...unsubscribes.value, unsubscribe]
     }
 
@@ -114,7 +101,7 @@ export const useLoyaltyStore = defineStore(
 
     return {
       loyalties,
-      fetchLoyaltiesByUserId,
+      fetchLoyalties,
       fetchLoyaltiesByCardId,
       createLoyalty,
       upsertLoyalty,
