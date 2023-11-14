@@ -19,8 +19,16 @@ export const useCardStore = defineStore(
   'CardStore',
   () => {
     // state
+    const card = ref<DocumentData>({})
     const cards = ref<DocumentData>([])
     const unsubscribes = ref<Unsubscribe[]>([])
+
+    async function fetchCard(id: string) {
+      const cardRef = await getDoc(doc(db, `cards/${id}`))
+      const cardObject = { id: cardRef.id, ...cardRef.data() }
+      card.value = cardObject
+      return cardObject
+    }
 
     async function fetchAllCards() {
       const unsubscribe = onSnapshot(collection(db, 'cards'), (doc) => {
@@ -87,7 +95,9 @@ export const useCardStore = defineStore(
     }
 
     return {
+      card,
       cards,
+      fetchCard,
       fetchCards,
       fetchAllCards,
       createCard,

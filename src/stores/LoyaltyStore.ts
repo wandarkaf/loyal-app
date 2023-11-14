@@ -4,8 +4,9 @@ import { db, collection } from '@/firebase'
 import type { DocumentData, Unsubscribe } from 'firebase/firestore'
 import {
   doc,
-  getDoc,
-  setDoc,
+  addDoc,
+  // getDoc,
+  // setDoc,
   updateDoc,
   deleteDoc,
   onSnapshot,
@@ -14,40 +15,28 @@ import {
   where,
   documentId
 } from 'firebase/firestore'
+import { useUserStore } from '@/stores/UserStore'
+import { useCardStore } from '@/stores/CardStore'
 
 export const useLoyaltyStore = defineStore(
   'LoyaltyStore',
   () => {
+    const userStore = useUserStore()
+    const cardStore = useCardStore()
+
     // state
     const loyalties = ref<DocumentData>([])
     const unsubscribes = ref<Unsubscribe[]>([])
 
     async function fetchLoyalties(ids: string[] | null) {
-      const loyaltyQuery = await query(collection(db, 'loyalties'), where(documentId(), 'in', ids))
-
-      const unsubscribe = onSnapshot(loyaltyQuery, async (queryDocuments) => {
-        loyalties.value = await queryDocuments.docs.map((document) => {
-          if (document.exists()) {
-            return { id: document.id, ...document.data() }
-          }
-          return null
-        })
-      })
-      unsubscribes.value = [...unsubscribes.value, unsubscribe]
-    }
-
-    async function fetchLoyaltiesByCardId(cardId: string) {
       try {
-        const cardRef = await getDoc(doc(db, `cards/${cardId}`))
-        const loyaltyArray = cardRef.data() !== undefined ? cardRef.data()?.loyalties : []
-        const loyaltyRefs = await query(
+        const loyaltyQuery = await query(
           collection(db, 'loyalties'),
-          where(documentId(), 'in', loyaltyArray)
+          where(documentId(), 'in', ids)
         )
 
-        const unsubscribe = onSnapshot(loyaltyRefs, (loyaltyDocuments) => {
-          console.log('loyaltyDocuments', loyaltyDocuments.docs)
-          loyalties.value = loyaltyDocuments.docs.map((document) => {
+        const unsubscribe = onSnapshot(loyaltyQuery, async (queryDocuments) => {
+          loyalties.value = await queryDocuments.docs.map((document) => {
             if (document.exists()) {
               return { id: document.id, ...document.data() }
             }
@@ -61,16 +50,22 @@ export const useLoyaltyStore = defineStore(
       }
     }
 
+    async function fetchLoyaltiesByCardId(cardId: string) {
+      const card = await cardStore.fetchCard(cardId)
+      await userStore.fetchUsers(card?.users)
+      await fetchLoyalties(card?.loyalties)
+    }
+
     async function createLoyalty(payload: any) {
       try {
-        const usernameLower = payload.username.toLowerCase()
-        const userRef = await setDoc(doc(db, 'users', payload.id), {
+        const loyaltyRef = await addDoc(collection(db, 'loyalties'), {
           ...payload,
-          usernameLower,
-          registerAt: serverTimestamp(),
-          email: payload.email.toLowerCase()
+          stamps: 0,
+          canBeClaimed: false,
+          isClaimed: false,
+          createdAt: serverTimestamp()
         })
-        return userRef
+        return loyaltyRef
       } catch (e) {
         console.error('Error adding document: ', e)
       }

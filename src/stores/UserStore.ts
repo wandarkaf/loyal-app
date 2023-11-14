@@ -9,7 +9,10 @@ import {
   updateDoc,
   deleteDoc,
   onSnapshot,
-  serverTimestamp
+  serverTimestamp,
+  documentId,
+  query,
+  where
 } from 'firebase/firestore'
 
 export const useUserStore = defineStore(
@@ -19,14 +22,26 @@ export const useUserStore = defineStore(
     const users = ref<DocumentData>([])
     const unsubscribes = ref<Unsubscribe[]>([])
 
-    async function fetchUsers() {
-      const unsubscribe = onSnapshot(collection(db, 'users'), (doc) => {
-        console.log('Current data for users')
-        users.value = doc.docs.map((doc) => {
-          return { id: doc.id, ...doc.data() }
+    async function fetchUsers(ids: string[] | null = null) {
+      try {
+        const userQuery =
+          ids === null
+            ? await collection(db, 'users')
+            : await query(collection(db, 'users'), where(documentId(), 'in', ids))
+
+        const unsubscribe = onSnapshot(userQuery, async (queryDocuments) => {
+          users.value = await queryDocuments.docs.map((document) => {
+            if (document.exists()) {
+              return { id: document.id, ...document.data() }
+            }
+            return null
+          })
         })
-      })
-      unsubscribes.value = [...unsubscribes.value, unsubscribe]
+        unsubscribes.value = [...unsubscribes.value, unsubscribe]
+      } catch (e) {
+        console.error('Error getting document: ', e)
+        users.value = []
+      }
     }
 
     async function fetchUser(id: string) {
