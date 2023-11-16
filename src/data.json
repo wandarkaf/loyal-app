@@ -11,7 +11,7 @@
       "usernameLower": "wandarkaf",
       "id": "4TWqh8Cm1OOmadsl4O8AY7Dr3LB3",
       "loyalties": ["-loyalty1", "-loyalty2"],
-      "cards": ["-card1"]
+      "cards": ["-card1", "-card2"]
     },
     {
       "avatar": "https://i.imgur.com/WPSrfGm.jpg",
@@ -30,18 +30,18 @@
   "cards": [
     {
       "id": "-card1",
-      "loyalties": ["-loyalty1", "-loyalty2"],
+      "loyalties": ["-loyalty1"],
       "users": ["4TWqh8Cm1OOmadsl4O8AY7Dr3LB3"],
-      "name": "755 loyalty  card",
+      "name": "755",
       "description": "755 loyalty card description",
       "type": "stamp",
       "style": {
-        "backgroundColor": "#222640",
-        "color": "#F2B705",
-        "borderWidth": "2px",
-        "borderColor": "#D94032",
-        "stampActiveColor": "#F29F05",
-        "stampInactiveColor": "#F2B705"
+        "backgroundColor": "#EEEEEE",
+        "color": "#6e695a",
+        "borderWidth": "6px",
+        "borderColor": "#CDBDC9",
+        "stampActiveColor": "#6e695a",
+        "stampInactiveColor": "#CECBC3"
       },
       "location": {
         "lat": 47.497913,
@@ -51,18 +51,18 @@
     },
     {
       "id": "-card2",
-      "name": "Express card",
-      "loyalties": [],
-      "users": [],
+      "name": "Empress coffee",
+      "loyalties": ["-loyalty2"],
+      "users": ["4TWqh8Cm1OOmadsl4O8AY7Dr3LB3"],
       "description": "Another storedescription",
       "type": "stamp",
       "style": {
-        "backgroundColor": "#D9D9D9",
-        "color": "#0D0D0D",
+        "backgroundColor": "#5D2031",
+        "color": "#BEB5C1",
         "borderWidth": "2px",
-        "borderColor": "#400219",
-        "stampActiveColor": "#0D0D0D",
-        "stampInactiveColor": "#8C8C8C"
+        "borderColor": "#5D2031",
+        "stampActiveColor": "#918296",
+        "stampInactiveColor": "#BEB5C1"
       },
       "location": {
         "lat": 47.497913,
@@ -76,29 +76,23 @@
       "id": "-loyalty1",
       "userId": "4TWqh8Cm1OOmadsl4O8AY7Dr3LB3",
       "cardId": "-card1",
-      "canBeClaimed": false,
-      "isClaimed": false,
-      "stamps": 1,
+      "canBeRedeem": false,
+      "redeem": false,
+      "active": true,
+      "count": 1,
       "createdAt": 1594037546,
-      "edited": {
-        "at": 1594037546,
-        "by": "EDDNPOuWSSfE43NfSkPbyt9vHOe2",
-        "action": "stamp"
-      }
+      "history": []
     },
     {
       "id": "-loyalty2",
       "userId": "4TWqh8Cm1OOmadsl4O8AY7Dr3LB3",
-      "cardId": "-card1",
-      "canBeClaimed": false,
-      "isClaimed": false,
-      "stamps": 3,
+      "cardId": "-card2",
+      "canBeRedeem": false,
+      "redeem": false,
+      "active": true,
+      "count": 3,
       "createdAt": 1594037546,
-      "edited": {
-        "at": 1594037546,
-        "by": "EDDNPOuWSSfE43NfSkPbyt9vHOe2",
-        "action": "stamp"
-      }
+      "history": []
     }
   ]
 }

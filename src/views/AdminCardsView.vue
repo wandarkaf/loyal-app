@@ -15,7 +15,7 @@ cardStore.fetchCards(authStore.authUser?.cards || [])
   <VContainer>
     <div v-for="card in cardStore.cards" :key="card.id">
       <RouterLink :to="{ name: 'adminCard', params: { id: card.id } }">
-        <BaseCard :card="{ ...card, count: 0 }" />
+        <BaseCard :card="{ ...card }" />
       </RouterLink>
     </div>
   </VContainer>

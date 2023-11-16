@@ -13,7 +13,10 @@ import {
   serverTimestamp,
   query,
   where,
-  documentId
+  documentId,
+  and,
+  or,
+  orderBy
 } from 'firebase/firestore'
 import { useUserStore } from '@/stores/UserStore'
 import { useCardStore } from '@/stores/CardStore'
@@ -28,11 +31,19 @@ export const useLoyaltyStore = defineStore(
     const loyalties = ref<DocumentData>([])
     const unsubscribes = ref<Unsubscribe[]>([])
 
-    async function fetchLoyalties(ids: string[] | null) {
+    async function fetchLoyalties(id: string, filters: string[] = [], type = 'cardId') {
       try {
+        if (type === 'cardId') {
+          const card = await cardStore.fetchCard(id)
+          await userStore.fetchUsers(card?.users)
+        }
+        const optionalFilters = filters.map((filter) => {
+          return where(filter, '==', true)
+        })
         const loyaltyQuery = await query(
           collection(db, 'loyalties'),
-          where(documentId(), 'in', ids)
+          and(where('createdAt', '<=', new Date()), where(type, '==', id), or(...optionalFilters)),
+          orderBy('createdAt', 'desc')
         )
 
         const unsubscribe = onSnapshot(loyaltyQuery, async (queryDocuments) => {
@@ -50,19 +61,14 @@ export const useLoyaltyStore = defineStore(
       }
     }
 
-    async function fetchLoyaltiesByCardId(cardId: string) {
-      const card = await cardStore.fetchCard(cardId)
-      await userStore.fetchUsers(card?.users)
-      await fetchLoyalties(card?.loyalties)
-    }
-
     async function createLoyalty(payload: any) {
       try {
         const loyaltyRef = await addDoc(collection(db, 'loyalties'), {
           ...payload,
-          stamps: 0,
-          canBeClaimed: false,
-          isClaimed: false,
+          count: 0,
+          canBeRedeem: false,
+          redeem: false,
+          active: true,
           createdAt: serverTimestamp()
         })
         return loyaltyRef
@@ -97,7 +103,6 @@ export const useLoyaltyStore = defineStore(
     return {
       loyalties,
       fetchLoyalties,
-      fetchLoyaltiesByCardId,
       createLoyalty,
       upsertLoyalty,
       deleteLoyalty,

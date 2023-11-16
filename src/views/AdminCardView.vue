@@ -3,22 +3,26 @@ import { useLoyaltyStore } from '@/stores/LoyaltyStore'
 import { useCardStore } from '@/stores/CardStore'
 import { useUserStore } from '@/stores/UserStore'
 import { useRoute } from 'vue-router'
+import { useFilters } from '@/composables/useFilters'
 import BaseCard from '@/components/BaseCard.vue'
 import BaseListItem from '@/components/BaseListItem.vue'
+import BaseFilters from '@/components/BaseFilters.vue'
 
 const loyaltyStore = useLoyaltyStore()
 const cardStore = useCardStore()
 const userStore = useUserStore()
 const route = useRoute()
 
-loyaltyStore.fetchLoyaltiesByCardId(route.params.id as string)
+const { filters, selectedFilters } = useFilters(route.params.id as string)
+
+loyaltyStore.fetchLoyalties(route.params.id as string, selectedFilters.value)
 
 const upsertLoyalty = async (item: any) => {
-  if (item.stamps === cardStore.card?.maxCount - 1) {
+  if (item.count === cardStore.card?.maxCount - 1) {
     loyaltyStore.upsertLoyalty(item.id, {
-      stamps: item.stamps + 1,
-      canBeClaimed: true
-      // redeemed: true
+      count: item.count + 1,
+      canBeRedeem: true,
+      active: false
     })
     const newLoyalty = await loyaltyStore.createLoyalty({
       userId: item.userId,
@@ -37,18 +41,18 @@ const upsertLoyalty = async (item: any) => {
       loyalties: [...user.loyalties, newLoyalty?.id]
     })
     // refresh data
-    loyaltyStore.fetchLoyaltiesByCardId(route.params.id as string)
+    loyaltyStore.fetchLoyalties(route.params.id as string)
   } else {
     loyaltyStore.upsertLoyalty(item.id, {
-      stamps: item.stamps + 1
+      count: item.count + 1
     })
   }
 }
 
 const redeemLoyalty = async (item: any) => {
   loyaltyStore.upsertLoyalty(item.id, {
-    canBeClaimed: false,
-    isClaimed: true
+    canBeRedeem: false,
+    redeem: true
   })
 }
 
@@ -59,6 +63,8 @@ const userDetails = (id: string) => {
 
 <template>
   <VContainer>
+    <BaseFilters v-model="selectedFilters" :items="filters" />
+
     <div class="flex flex-wrap gap-4">
       <v-list class="grow">
         <BaseListItem

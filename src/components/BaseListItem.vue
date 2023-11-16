@@ -25,17 +25,17 @@ defineProps({
     </template>
 
     <template v-slot:append>
-      <template v-if="!(loyalty.stamps === card.maxCount)">
+      <template v-if="!(loyalty.count === card.maxCount)">
         <v-btn class="text-none" stacked variant="text" @click="emit('stamp')">
-          <v-badge color="info" :content="loyalty.stamps">
+          <v-badge color="info" :content="loyalty.count">
             <v-icon>mdi-stamper</v-icon>
           </v-badge>
         </v-btn>
       </template>
-      <v-btn v-if="loyalty.canBeClaimed" variant="text" color="warning" @click="emit('redeem')">
+      <v-btn v-if="loyalty.canBeRedeem" variant="text" color="warning" @click="emit('redeem')">
         Can be redeem
       </v-btn>
-      <v-chip v-if="loyalty.isClaimed" color="success" text-color="white"> Claimed! </v-chip>
+      <v-chip v-if="loyalty.redeem" color="success" text-color="white"> Claimed! </v-chip>
     </template>
   </v-list-item>
 </template>
