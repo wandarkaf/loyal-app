@@ -9,7 +9,7 @@ export function useFilters(id: string, key: string = 'cardId') {
   const selectedFilters = shallowRef<filter[]>(['active', 'canBeRedeem'])
 
   watch(selectedFilters, (value) => {
-    loyaltyStore.fetchLoyalties(id, value, key)
+    loyaltyStore.fetchLoyalties({ id, filters: value, type: key })
   })
 
   return { filters, selectedFilters }

@@ -13,7 +13,11 @@ const cardStore = useCardStore()
 
 const { filters, selectedFilters } = useFilters(authStore.authUser?.uid as string, 'userId')
 
-loyaltyStore.fetchLoyalties(authStore.authUser?.uid || '', selectedFilters.value, 'userId')
+loyaltyStore.fetchLoyalties({
+  id: authStore.authUser?.uid as string,
+  filters: selectedFilters.value,
+  type: 'userId'
+})
 cardStore.fetchCards(authStore.authUser?.cards || [])
 </script>
 <template>

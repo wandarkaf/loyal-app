@@ -15,7 +15,7 @@ const route = useRoute()
 
 const { filters, selectedFilters } = useFilters(route.params.id as string)
 
-loyaltyStore.fetchLoyalties(route.params.id as string, selectedFilters.value)
+loyaltyStore.fetchLoyalties({ id: route.params.id as string, filters: selectedFilters.value })
 
 const upsertLoyalty = async (item: any) => {
   if (item.count === cardStore.card?.maxCount - 1) {
@@ -41,7 +41,7 @@ const upsertLoyalty = async (item: any) => {
       loyalties: [...user.loyalties, newLoyalty?.id]
     })
     // refresh data
-    loyaltyStore.fetchLoyalties(route.params.id as string)
+    loyaltyStore.fetchLoyalties({ id: route.params.id as string, filters: selectedFilters.value })
   } else {
     loyaltyStore.upsertLoyalty(item.id, {
       count: item.count + 1
@@ -64,7 +64,6 @@ const userDetails = (id: string) => {
 <template>
   <VContainer>
     <BaseFilters v-model="selectedFilters" :items="filters" />
-
     <div class="flex flex-wrap gap-4">
       <v-list class="grow">
         <BaseListItem

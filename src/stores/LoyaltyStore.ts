@@ -5,15 +5,12 @@ import type { DocumentData, Unsubscribe } from 'firebase/firestore'
 import {
   doc,
   addDoc,
-  // getDoc,
-  // setDoc,
   updateDoc,
   deleteDoc,
   onSnapshot,
   serverTimestamp,
   query,
   where,
-  documentId,
   and,
   or,
   orderBy
@@ -31,11 +28,13 @@ export const useLoyaltyStore = defineStore(
     const loyalties = ref<DocumentData>([])
     const unsubscribes = ref<Unsubscribe[]>([])
 
-    async function fetchLoyalties(id: string, filters: string[] = [], type = 'cardId') {
+    type fetchParams = { id: string; filters: string[]; type?: string }
+
+    async function fetchLoyalties({ id, filters = [], type = 'cardId' }: fetchParams) {
       try {
         if (type === 'cardId') {
           const card = await cardStore.fetchCard(id)
-          await userStore.fetchUsers(card?.users)
+          await userStore.fetchUsers(card.users)
         }
         const optionalFilters = filters.map((filter) => {
           return where(filter, '==', true)

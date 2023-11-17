@@ -43,6 +43,12 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
+      path: '/admin/cards/:id/edit',
+      name: 'adminCardEdit',
+      component: () => import('../views/AdminCardEditView.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
       path: '/register',
       name: 'register',
       component: () => import('../views/RegisterView.vue'),

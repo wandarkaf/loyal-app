@@ -40,6 +40,7 @@ export const useCardStore = defineStore(
     }
 
     async function fetchCards(ids: string[] | null) {
+      console.log(ids)
       const unsubscribe = onSnapshot(
         query(collection(db, 'cards'), where(documentId(), 'in', ids)),
         (doc) => {
@@ -49,6 +50,9 @@ export const useCardStore = defineStore(
         }
       )
       unsubscribes.value = [...unsubscribes.value, unsubscribe]
+      console.log(cards.value)
+
+      return cards.value
     }
 
     async function createCard(payload: any) {
