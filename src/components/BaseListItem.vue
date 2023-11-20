@@ -25,7 +25,7 @@ defineProps({
     </template>
 
     <template v-slot:append>
-      <template v-if="!(loyalty.count === card.maxCount)">
+      <template v-if="!(loyalty.count >= card.maxCount)">
         <v-btn class="text-none" stacked variant="text" @click="emit('stamp')">
           <v-badge color="info" :content="loyalty.count">
             <v-icon>mdi-stamper</v-icon>

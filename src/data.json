@@ -38,7 +38,7 @@
       "style": {
         "backgroundColor": "#EEEEEE",
         "color": "#6e695a",
-        "borderWidth": "6px",
+        "borderWidth": 6,
         "borderColor": "#CDBDC9",
         "stampActiveColor": "#6e695a",
         "stampInactiveColor": "#CECBC3"
@@ -47,7 +47,8 @@
         "lat": 47.497913,
         "lng": 19.040236
       },
-      "maxCount": 10
+      "maxCount": 10,
+      "icon": "mdi-coffee-outline"
     },
     {
       "id": "-card2",
@@ -59,7 +60,7 @@
       "style": {
         "backgroundColor": "#5D2031",
         "color": "#BEB5C1",
-        "borderWidth": "2px",
+        "borderWidth": 2,
         "borderColor": "#5D2031",
         "stampActiveColor": "#918296",
         "stampInactiveColor": "#BEB5C1"
@@ -68,7 +69,8 @@
         "lat": 47.497913,
         "lng": 19.040236
       },
-      "maxCount": 8
+      "maxCount": 8,
+      "icon": "mdi-coffee"
     }
   ],
   "loyalties": [

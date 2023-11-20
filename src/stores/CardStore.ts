@@ -61,8 +61,7 @@ export const useCardStore = defineStore(
         const userRef = await setDoc(doc(db, 'users', payload.id), {
           ...payload,
           usernameLower,
-          registerAt: serverTimestamp(),
-          email: payload.email.toLowerCase()
+          createdAt: serverTimestamp()
         })
         // users.value = [...users.value.map((user: any) => user), { ...payload }]
         return userRef
@@ -72,12 +71,9 @@ export const useCardStore = defineStore(
     }
 
     async function upsertCard(id: string, payload: any) {
-      const userRef = await doc(db, 'cards', id)
       try {
-        await updateDoc(userRef, payload)
-        // let user = users.value.find((user: any) => user.id === id)
-        // user = { ...user, ...payload }
-        // users.value = [...users.value.filter((user: any) => user.id !== id), user]
+        const cardRef = await doc(db, 'cards', id)
+        await updateDoc(cardRef, payload)
       } catch (e) {
         console.error('Error updating document: ', e)
       }
