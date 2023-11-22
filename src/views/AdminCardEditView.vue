@@ -3,14 +3,15 @@ import { useRoute } from 'vue-router'
 import { useCardStore } from '@/stores/CardStore'
 import BaseCard from '@/components/BaseCard.vue'
 import BaseColorPicker from '@/components/BaseColorPicker.vue'
-import { watch, ref } from 'vue'
+import { watch, ref, computed } from 'vue'
+import { useNotifications } from '@/composables/useNotifications'
 import isEqual from 'lodash/isEqual'
-import differenceWith from 'lodash/differenceWith'
 
 const route = useRoute()
 const cardStore = useCardStore()
+const { addNotification } = useNotifications()
 
-const localCard = ref<{
+const cardInfo = ref<{
   name: string
   description: string
   type: string
@@ -32,6 +33,7 @@ const localCard = ref<{
   users: []
 })
 const cardStyle = ref({
+  backgroundImage: null,
   backgroundColor: '',
   borderColor: '',
   stampActiveColor: '',
@@ -42,19 +44,41 @@ const cardStyle = ref({
 
 cardStore.fetchCard(route.params.id as string)
 
+const isDisabled = computed(
+  () => isEqual(cardStyle.value, cardStore.card.style) && isEqual(cardInfo.value, cardStore.card)
+)
+
 const saveCard = () => {
-  cardStore.upsertCard(route.params.id as string, localCard.value)
+  cardStore.upsertCard(route.params.id as string, {
+    ...cardInfo.value,
+    style: { ...cardStyle.value }
+  })
+  addNotification({
+    message: 'Card updated',
+    timeout: 5000
+  })
 }
 
 const reset = () => {
-  localCard.value = { ...cardStore.card }
+  cardInfo.value = { ...cardStore.card }
   cardStyle.value = { ...cardStore.card.style }
+}
+
+const handleImageUpload = (e: Event) => {
+  const inputElement = e.target as HTMLInputElement
+  const fileToUpload = inputElement.files[0] || null
+  cardInfo.value.fileToUpload = fileToUpload
+  const reader = new FileReader()
+  reader.onload = (event) => {
+    cardStyle.value.backgroundImage = event.target.result
+  }
+  reader.readAsDataURL(fileToUpload)
 }
 
 watch(
   () => cardStore.card,
   (card) => {
-    localCard.value = { ...card }
+    cardInfo.value = { ...card }
     cardStyle.value = { ...card.style }
   }
 )
@@ -65,7 +89,7 @@ watch(
       <div class="flex flex-col gap-4 w-full">
         <h2 class="text-2xl">Preview</h2>
         <BaseCard
-          :card="{ ...localCard, style: { ...cardStyle } }"
+          :card="{ ...cardInfo, style: { ...cardStyle } }"
           :loyalty="{ count: 3 }"
           class="self-center"
         />
@@ -76,6 +100,18 @@ watch(
           <div class="grid grid-cols-3 gap-4">
             <div class="flex flex-col gap-2">
               <h4>General</h4>
+              <label for="backgroundImage">
+                <div v-if="cardStyle.backgroundImage">
+                  <v-img :src="cardStyle.backgroundImage" />
+                </div>
+              </label>
+              <v-file-input
+                id="backgroundImage"
+                v-show="!cardStyle.backgroundImage"
+                label="File input"
+                @change="handleImageUpload"
+                accept="image/*"
+              ></v-file-input>
               <BaseColorPicker v-model="cardStyle.backgroundColor">Background</BaseColorPicker>
               <BaseColorPicker v-model="cardStyle.color">text</BaseColorPicker>
             </div>
@@ -91,13 +127,13 @@ watch(
             </div>
             <div class="flex flex-col gap-2">
               <h4>Stamp</h4>
-              <BaseColorPicker v-model="cardStyle.stampActiveColor"> Active stamp </BaseColorPicker>
+              <BaseColorPicker v-model="cardStyle.stampActiveColor">Active stamp</BaseColorPicker>
               <BaseColorPicker v-model="cardStyle.stampInactiveColor">
                 Default stamp
               </BaseColorPicker>
-              <VTextField v-model="localCard.maxCount" label="Max count" type="number" />
+              <VTextField v-model="cardInfo.maxCount" label="Max count" type="number" />
               <v-select
-                v-model="localCard.icon"
+                v-model="cardInfo.icon"
                 label="Icon"
                 :items="[
                   'mdi-coffee-outline',
@@ -105,32 +141,22 @@ watch(
                   'mdi-mushroom',
                   'mdi-alien',
                   'mdi-arm-flex',
-                  'mdi-bacteria'
+                  'mdi-bacteria',
+                  'mdi-hamburger'
                 ]"
               ></v-select>
             </div>
           </div>
         </div>
-
         <div class="col-span-2">
           <h3 class="text-xl mb-8">Info</h3>
-          <VTextField v-model="localCard.name" label="Name" required />
-          <VTextarea v-model="localCard.description" label="Description" counter="500" noResize />
+          <VTextField v-model="cardInfo.name" label="Name" required />
+          <VTextarea v-model="cardInfo.description" label="Description" counter="500" noResize />
         </div>
       </div>
       <div class="flex gap-4 justify-end">
-        <VBtn
-          @click="saveCard"
-          color="primary"
-          :disabled="isEqual(cardStyle, cardStore.card.style) && isEqual(localCard, cardStore.card)"
-        >
-          Save
-        </VBtn>
-        <VBtn
-          :disabled="isEqual(cardStyle, cardStore.card.style) && isEqual(localCard, cardStore.card)"
-          @click="reset"
-          >Reset</VBtn
-        >
+        <VBtn @click="saveCard" color="primary" :disabled="isDisabled">Save</VBtn>
+        <VBtn :disabled="isDisabled" @click="reset">Reset</VBtn>
       </div>
     </div>
   </VContainer>

@@ -14,6 +14,8 @@ import {
   and,
   or,
   orderBy
+  // limit
+  // startAfter
 } from 'firebase/firestore'
 import { useUserStore } from '@/stores/UserStore'
 import { useCardStore } from '@/stores/CardStore'
@@ -43,6 +45,8 @@ export const useLoyaltyStore = defineStore(
           collection(db, 'loyalties'),
           and(where('createdAt', '<=', new Date()), where(type, '==', id), or(...optionalFilters)),
           orderBy('createdAt', 'desc')
+          // startAfter(loyalties.value[loyalties.value.length - 1]),
+          // limit(1)
         )
 
         const unsubscribe = onSnapshot(loyaltyQuery, async (queryDocuments) => {

@@ -13,6 +13,8 @@ const cardStore = useCardStore()
 
 const { filters, selectedFilters } = useFilters(authStore.authUser?.uid as string, 'userId')
 
+selectedFilters.value = ['active']
+
 loyaltyStore.fetchLoyalties({
   id: authStore.authUser?.uid as string,
   filters: selectedFilters.value,
@@ -24,7 +26,7 @@ cardStore.fetchCards(authStore.authUser?.cards || [])
   <VContainer>
     <BaseFilters v-model="selectedFilters" :items="filters" />
 
-    <div class="flex gap-4 flex-wrap">
+    <div class="flex gap-4 flex-col items-center">
       <BaseCard
         v-for="loyalty in loyaltyStore.loyalties"
         :key="loyalty.id"

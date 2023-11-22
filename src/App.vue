@@ -7,6 +7,7 @@ import TheAppBar from './components/TheAppBar.vue'
 import TheNavigationDrawer from './components/TheNavigationDrawer.vue'
 import TheControlBar from './components/TheControlBar.vue'
 import TheFooter from './components/TheFooter.vue'
+import BaseNotifications from './components/BaseNotifications.vue'
 
 const drawer = shallowRef(false)
 </script>
@@ -23,6 +24,7 @@ const drawer = shallowRef(false)
         </VFadeTransition>
       </RouterView>
     </VMain>
+    <BaseNotifications />
     <TheFooter />
     <TheControlBar />
   </VApp>

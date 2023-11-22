@@ -14,6 +14,9 @@ import {
   where,
   documentId
 } from 'firebase/firestore'
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage'
+
+import { useAuthStore } from './AuthStore'
 
 export const useCardStore = defineStore(
   'CardStore',
@@ -22,6 +25,8 @@ export const useCardStore = defineStore(
     const card = ref<DocumentData>({})
     const cards = ref<DocumentData>([])
     const unsubscribes = ref<Unsubscribe[]>([])
+
+    const authStore = useAuthStore()
 
     async function fetchCard(id: string) {
       const cardRef = await getDoc(doc(db, `cards/${id}`))
@@ -40,7 +45,6 @@ export const useCardStore = defineStore(
     }
 
     async function fetchCards(ids: string[] | null) {
-      console.log(ids)
       const unsubscribe = onSnapshot(
         query(collection(db, 'cards'), where(documentId(), 'in', ids)),
         (doc) => {
@@ -70,10 +74,25 @@ export const useCardStore = defineStore(
       }
     }
 
+    async function uploadImage(file: any) {
+      const storage = getStorage()
+      const storageReference = storageRef(
+        storage,
+        `uploads/${authStore.authUser?.uid}/images/${Date.now()}-${file.name}`
+      )
+      const uploadTask = await uploadBytes(storageReference, file)
+      return await getDownloadURL(uploadTask.ref)
+    }
+
     async function upsertCard(id: string, payload: any) {
       try {
         const cardRef = await doc(db, 'cards', id)
-        await updateDoc(cardRef, payload)
+        if (payload.fileToUpload) {
+          payload.style.backgroundImage = await uploadImage(payload.fileToUpload)
+          delete payload.fileToUpload
+        }
+        await updateDoc(cardRef, { ...payload })
+        card.value = { ...card.value, ...payload }
       } catch (e) {
         console.error('Error updating document: ', e)
       }
