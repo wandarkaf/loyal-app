@@ -67,8 +67,8 @@ export const useUserStore = defineStore(
     }
 
     async function upsertUser(id: string, payload: any) {
-      const userRef = await doc(db, 'users', id)
       try {
+        const userRef = await doc(db, 'users', id)
         await updateDoc(userRef, payload)
         let user = users.value.find((user: any) => user.id === id)
         user = { ...user, ...payload }

@@ -2,8 +2,10 @@
 import BaseParallax from '@/components/BaseParallax.vue'
 import BaseCard from '@/components/BaseCard.vue'
 import { useCardStore } from '@/stores/CardStore'
+import { useAuthStore } from '@/stores/AuthStore'
 
 const cardStore = useCardStore()
+const authStore = useAuthStore()
 cardStore.fetchAllCards()
 </script>
 
@@ -14,7 +16,13 @@ cardStore.fetchAllCards()
   </BaseParallax>
   <VContainer>
     <div class="grid-cols-3 grid gap-4">
-      <BaseCard v-for="card in cardStore.cards" :key="card.id" :card="card" demo />
+      <BaseCard
+        v-for="card in cardStore.cards"
+        :key="card.id"
+        :card="card"
+        :canAddLoyalty="!authStore.authUser.cards.includes(card.id)"
+        demo
+      />
     </div>
   </VContainer>
 </template>

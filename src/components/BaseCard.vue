@@ -1,7 +1,17 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { useRouter } from 'vue-router'
+import { useCardStore } from '@/stores/CardStore'
+import { useUserStore } from '@/stores/UserStore'
+import { useLoyaltyStore } from '@/stores/LoyaltyStore'
+import { useAuthStore } from '@/stores/AuthStore'
+
 import BaseQRcode from './BaseQRcode.vue'
+
+const cardStore = useCardStore()
+const userStore = useUserStore()
+const loyaltyStore = useLoyaltyStore()
+const authStore = useAuthStore()
 
 const props = defineProps({
   card: {
@@ -13,6 +23,10 @@ const props = defineProps({
     required: false,
     default: () => ({})
   },
+  canAddLoyalty: {
+    type: Boolean,
+    default: false
+  },
   demo: {
     type: Boolean,
     default: false
@@ -20,7 +34,6 @@ const props = defineProps({
 })
 
 const router = useRouter()
-const route = useRoute()
 
 const show = ref(false)
 
@@ -45,9 +58,38 @@ const cardStyle = computed(() => {
     borderWidth: `${props.card.style?.borderWidth}px`
   }
 })
+
+const addLoyalty = async () => {
+  const newLoyalty = await loyaltyStore.createLoyalty({
+    userId: authStore.authUser?.uid,
+    cardId: props.card.id
+  })
+
+  // update card loyalties
+  cardStore.upsertCard(props.card.id, {
+    ...props.card,
+    loyalties: [...props.card.loyalties, newLoyalty?.id]
+  })
+  // update user loyalties
+  userStore.upsertUser(authStore.authUser?.uid, {
+    loyalties: [...authStore.authUser.loyalties, newLoyalty?.id],
+    cards: [...authStore.authUser.cards, props.card.id]
+  })
+  // refresh data
+  // loyaltyStore.fetchLoyalties({ id: route.params.id as string, filters: selectedFilters.value })
+  router.push({
+    name: 'loyalty'
+  })
+}
 </script>
 <template>
-  <VCard :style="cardStyle" class="w-96" :image="card.style.backgroundImage" :title="card.name">
+  <VCard
+    v-if="card.style"
+    :style="cardStyle"
+    class="w-96"
+    :image="card.style.backgroundImage"
+    :title="card.name"
+  >
     <template v-slot:append>
       <v-chip v-if="loyalty.redeem" color="success" variant="flat" text-color="white" class=""
         >Redeem</v-chip
@@ -69,6 +111,8 @@ const cardStyle = computed(() => {
     </v-card-text>
 
     <v-card-actions>
+      <v-btn v-if="canAddLoyalty" icon="mdi-plus" @click="addLoyalty"></v-btn>
+
       <template v-if="!demo">
         <v-spacer></v-spacer>
         <v-btn :icon="show ? 'mdi-chevron-up' : 'mdi-chevron-down'" @click="show = !show"></v-btn>

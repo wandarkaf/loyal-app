@@ -16,13 +16,10 @@ const { addNotification } = useNotifications()
 
 const createCard = async (card: any) => {
   const cardResponse = await cardStore.createCard(card)
-
-  // update user cards
-
-  userStore.upsertUser(authStore.authUser?.uid, {
+  await userStore.upsertUser(authStore.authUser?.uid, {
     cards: [...authStore.authUser.cards, cardResponse?.id]
   })
-  await useAuthStore().initAuthentication()
+  // await useAuthStore().initAuthentication()
   addNotification({
     message: 'Card created',
     timeout: 5000
