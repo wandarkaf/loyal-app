@@ -14,9 +14,10 @@ cardStore.fetchCards(authStore.authUser?.cards || [])
 <template>
   <VContainer>
     <div class="flex gap-4 flex-col items-center">
+      <VBtn color="primary" :to="{ name: 'adminCardCreate' }">Create card</VBtn>
       <div v-for="card in cardStore.cards" :key="card.id" class="flex flex-wrap gap-4">
         <RouterLink :to="{ name: 'adminCard', params: { id: card.id } }">
-          <BaseCard :card="{ ...card }" />
+          <BaseCard :card="{ ...card }" demo />
         </RouterLink>
         <div class="flex flex-col gap-6">
           <VBtn color="primary" :to="{ name: 'adminCard', params: { id: card.id } }">Details</VBtn>

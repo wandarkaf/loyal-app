@@ -19,6 +19,7 @@ const emit = defineEmits(['update:modelValue'])
     @update:model-value="emit('update:modelValue', $event)"
     column
     multiple
+    mandatory
   >
     <v-chip v-for="item in items" :key="item as string" :value="item" filter variant="outlined">
       {{ item }}

@@ -6,9 +6,14 @@ type notification = {
   timeout?: number
 }
 
+type notificationParams = {
+  message: string
+  timeout?: number
+}
+
 const notifications = reactive<notification[]>([])
 
-const addNotification = ({ message, timeout }: notification) => {
+const addNotification = ({ message, timeout }: notificationParams) => {
   console.log('addNotification', message)
   const id = `${Math.random()}${Date.now()}`
   notifications.push({

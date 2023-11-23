@@ -5,7 +5,7 @@ import type { DocumentData, Unsubscribe } from 'firebase/firestore'
 import {
   doc,
   getDoc,
-  setDoc,
+  addDoc,
   updateDoc,
   deleteDoc,
   onSnapshot,
@@ -61,14 +61,17 @@ export const useCardStore = defineStore(
 
     async function createCard(payload: any) {
       try {
-        const usernameLower = payload.username.toLowerCase()
-        const userRef = await setDoc(doc(db, 'users', payload.id), {
+        if (payload.fileToUpload) {
+          payload.style.backgroundImage = await uploadImage(payload.fileToUpload)
+          delete payload.fileToUpload
+        }
+        const cardRef = await addDoc(collection(db, 'cards'), {
           ...payload,
-          usernameLower,
+          users: [],
+          loyalties: [],
           createdAt: serverTimestamp()
         })
-        // users.value = [...users.value.map((user: any) => user), { ...payload }]
-        return userRef
+        return cardRef
       } catch (e) {
         console.error('Error adding document: ', e)
       }

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import BaseParallax from '@/components/BaseParallax.vue'
 import BaseHero from '@/components/BaseHero.vue'
-import QRcode from '@/components/QRcode.vue'
 </script>
 
 <template>
@@ -10,7 +9,6 @@ import QRcode from '@/components/QRcode.vue'
       <h2 class="mb-4 text-2xl">The best company</h2>
       <h4 class="">Let's help each other!</h4>
     </BaseParallax>
-    <QRcode />
     <BaseHero></BaseHero>
     <BaseHero></BaseHero>
 
