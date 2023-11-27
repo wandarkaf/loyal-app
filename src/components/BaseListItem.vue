@@ -35,7 +35,7 @@ defineProps({
       <v-btn v-if="loyalty.canBeRedeem" variant="text" color="warning" @click="emit('redeem')">
         Can be redeem
       </v-btn>
-      <v-chip v-if="loyalty.redeem" color="success" text-color="white"> Claimed! </v-chip>
+      <v-chip v-if="loyalty.redeem" color="success" text-color="white">Claimed!</v-chip>
     </template>
   </v-list-item>
 </template>

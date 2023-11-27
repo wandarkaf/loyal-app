@@ -21,7 +21,7 @@ const items = shallowRef([
 </script>
 <template>
   <!-- vuetify type are a nightmare -->
-  <v-breadcrumbs :items="items" divider="-"></v-breadcrumbs>
+  <v-breadcrumbs :items="items as any" divider="-"></v-breadcrumbs>
 </template>
 
 <style scoped></style>

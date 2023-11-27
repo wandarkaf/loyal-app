@@ -57,7 +57,8 @@ const redeemLoyalty = async (item: any) => {
 }
 
 const userDetails = (id: string) => {
-  return userStore.users.find((user: any) => user.id === id)
+  console.log(userStore.users, id)
+  return userStore.users.find((user: any) => user.id === id) || {}
 }
 </script>
 

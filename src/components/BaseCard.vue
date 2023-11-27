@@ -68,7 +68,8 @@ const addLoyalty = async () => {
   // update card loyalties
   cardStore.upsertCard(props.card.id, {
     ...props.card,
-    loyalties: [...props.card.loyalties, newLoyalty?.id]
+    loyalties: [...props.card.loyalties, newLoyalty?.id],
+    users: [...props.card.users, authStore.authUser?.uid]
   })
   // update user loyalties
   userStore.upsertUser(authStore.authUser?.uid, {
