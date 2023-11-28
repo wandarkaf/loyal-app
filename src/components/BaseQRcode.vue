@@ -16,17 +16,21 @@ const props = defineProps({
 })
 
 const qrcode = ref<HTMLBodyElement | null>(null)
+// const windowRef = ref<Window | null>(window)
 
 onMounted(() => {
   if (!qrcode.value) return
   QRCode(qrcode.value || null, {
+    // text: `${windowRef.value?.location.origin}${props.text}`,
     text: props.text,
     tag: props.element
   })
 })
 </script>
 <template>
-  <div ref="qrcode" id="qrcode"></div>
+  <div>
+    <div ref="qrcode" id="qrcode"></div>
+  </div>
 </template>
 
 <style scoped></style>
