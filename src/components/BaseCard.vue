@@ -42,7 +42,7 @@ const qrUrl = computed(
     // `${import.meta.env.BASE_URL}loyalty/${props.loyalty.id}/${
     //   props.loyalty.canBeRedeem ? 'redeem' : 'add'
     // }`
-    props.loyalty.id
+    `${props.loyalty.id}`
 )
 
 const redeemMap = computed(() =>
