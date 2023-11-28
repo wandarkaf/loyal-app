@@ -68,6 +68,8 @@ const userDetails = (id: string) => {
 watch(loyaltyCode, async (value) => {
   if (value) {
     const loyalty = loyaltyStore.loyalties.find((loyalty: any) => loyalty.id === value)
+    console.log(value)
+    console.log(loyalty)
     await upsertLoyalty(loyalty)
     dialog.value = false
     loyaltyCode.value = null
