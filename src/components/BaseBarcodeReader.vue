@@ -16,15 +16,9 @@ const video = shallowRef<HTMLVideoElement>()
 const hasTouchScreen = shallowRef(false)
 const detectInterval = shallowRef<NodeJS.Timeout>()
 
-if (!('BarcodeDetector' in globalThis)) {
-  console.log('Barcode Detector is not supported by this browser.')
-} else {
-  console.log('Barcode Detector supported!')
-
-  codeDetector.value = new BarcodeDetector({
-    formats: ['qr_code']
-  })
-}
+codeDetector.value = new BarcodeDetector({
+  formats: ['qr_code']
+})
 
 const detectCode = async () => {
   if (!video.value) return
