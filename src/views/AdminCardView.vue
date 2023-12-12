@@ -17,7 +17,7 @@ const route = useRoute()
 
 const { filters, selectedFilters } = useFilters(route.params.id as string)
 
-const loyaltyCode = shallowRef(null)
+const loyaltyCode = shallowRef('')
 const dialog = shallowRef(false)
 
 loyaltyStore.fetchLoyalties({ id: route.params.id as string, filters: selectedFilters.value })
@@ -72,7 +72,7 @@ watch(loyaltyCode, async (value) => {
     console.log(loyalty)
     await upsertLoyalty(loyalty)
     dialog.value = false
-    loyaltyCode.value = null
+    loyaltyCode.value = ''
   }
 })
 </script>
@@ -83,7 +83,7 @@ watch(loyaltyCode, async (value) => {
 
     <v-dialog v-model="dialog" fullscreen :scrim="false" transition="dialog-bottom-transition">
       <template v-slot:activator="{ props }">
-        <v-btn color="primary" dark v-bind="props"> Scan QR</v-btn>
+        <v-btn color="primary" v-bind="props"> Scan QR</v-btn>
       </template>
       <v-card>
         <BaseBarcodeReader v-model="loyaltyCode" />
