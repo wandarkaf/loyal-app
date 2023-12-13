@@ -1,14 +1,18 @@
 <script setup lang="ts">
+import { shallowRef, watch } from 'vue'
+import { useRoute } from 'vue-router'
+
+import { useFilters } from '@/composables/useFilters'
+
 import { useLoyaltyStore } from '@/stores/LoyaltyStore'
 import { useCardStore } from '@/stores/CardStore'
 import { useUserStore } from '@/stores/UserStore'
-import { useRoute } from 'vue-router'
-import { useFilters } from '@/composables/useFilters'
+
 import BaseCard from '@/components/BaseCard.vue'
 import BaseListItem from '@/components/BaseListItem.vue'
 import BaseFilters from '@/components/BaseFilters.vue'
 import BaseBarcodeReader from '@/components/BaseBarcodeReader.vue'
-import { shallowRef, watch } from 'vue'
+import BaseDialog from '@/components/BaseDialog.vue'
 
 const loyaltyStore = useLoyaltyStore()
 const cardStore = useCardStore()
@@ -68,8 +72,6 @@ const userDetails = (id: string) => {
 watch(loyaltyCode, async (value) => {
   if (value) {
     const loyalty = loyaltyStore.loyalties.find((loyalty: any) => loyalty.id === value)
-    console.log(value)
-    console.log(loyalty)
     await upsertLoyalty(loyalty)
     dialog.value = false
     loyaltyCode.value = ''
@@ -80,15 +82,14 @@ watch(loyaltyCode, async (value) => {
 <template>
   <VContainer>
     <BaseFilters v-model="selectedFilters" :items="filters" />
+    <BaseDialog ref="dialogRef" title="Scanner" v-model="dialog" v-slot="{ dimensions }">
+      <BaseBarcodeReader
+        v-model="loyaltyCode"
+        :width="dimensions.width"
+        :height="dimensions.height"
+      />
+    </BaseDialog>
 
-    <v-dialog v-model="dialog" fullscreen :scrim="false" transition="dialog-bottom-transition">
-      <template v-slot:activator="{ props }">
-        <v-btn color="primary" v-bind="props"> Scan QR</v-btn>
-      </template>
-      <v-card>
-        <BaseBarcodeReader v-model="loyaltyCode" />
-      </v-card>
-    </v-dialog>
     <div class="flex flex-wrap gap-4">
       <v-list class="grow">
         <BaseListItem
@@ -101,7 +102,7 @@ watch(loyaltyCode, async (value) => {
           @redeem="redeemLoyalty(loyalty)"
         />
       </v-list>
-      <BaseCard v-if="cardStore.card" :card="cardStore.card" />
+      <BaseCard v-if="cardStore.card" :card="cardStore.card" demo />
     </div>
   </VContainer>
 </template>

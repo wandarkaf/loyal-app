@@ -1,90 +1,71 @@
 <script setup lang="ts">
-import { shallowRef, defineProps, onMounted, onBeforeUnmount } from 'vue'
+import { shallowRef, defineProps, onBeforeUnmount, watchEffect } from 'vue'
+import { useUserMedia } from '@vueuse/core'
 import { BarcodeDetector } from 'barcode-detector/pure'
+import { useTouchScreen } from '@/composables/useTouchScreen'
 
 defineProps({
   modelValue: {
     type: String,
     required: true
+  },
+  width: {
+    type: Number,
+    default: 640
+  },
+  height: {
+    type: Number,
+    default: 480
   }
 })
 
 const emit = defineEmits(['update:modelValue'])
 
-const codeDetector = shallowRef<BarcodeDetector>()
+const codeDetector = shallowRef<BarcodeDetector>(
+  new BarcodeDetector({
+    formats: ['qr_code']
+  })
+)
 const video = shallowRef<HTMLVideoElement>()
-const hasTouchScreen = shallowRef(false)
 const detectInterval = shallowRef<NodeJS.Timeout>()
 
-codeDetector.value = new BarcodeDetector({
-  formats: ['qr_code']
+const { hasTouchScreen } = useTouchScreen()
+const { stream, start, stop } = useUserMedia({
+  constraints: {
+    video: {
+      facingMode: hasTouchScreen.value ? 'environment' : 'user'
+    },
+    audio: false
+  }
 })
 
 const detectCode = async () => {
-  if (!video.value) return
-
-  const codes = (await codeDetector.value?.detect(video.value)) || []
-  console.log(codes)
-  if (codes.length > 0) {
-    emit('update:modelValue', codes[0].rawValue)
-    clearInterval(detectInterval.value)
-  } else {
-    emit('update:modelValue', '')
-  }
-}
-
-if ('maxTouchPoints' in navigator) {
-  hasTouchScreen.value = navigator.maxTouchPoints > 0
-} else if ('msMaxTouchPoints' in navigator) {
-  hasTouchScreen.value = navigator['msMaxTouchPoints'] > 0
-} else {
-  const mQ = matchMedia?.('(pointer:coarse)')
-  if (mQ?.media === '(pointer:coarse)') {
-    hasTouchScreen.value = !!mQ.matches
-  } else if ('orientation' in window) {
-    hasTouchScreen.value = true // deprecated, but good fallback
-  } else {
-    // Only as a last resort, fall back to user agent sniffing
-    const UA = navigator['userAgent']
-    hasTouchScreen.value =
-      /\b(BlackBerry|webOS|iPhone|IEMobile)\b/i.test(UA) ||
-      /\b(Android|Windows Phone|iPad|iPod)\b/i.test(UA)
-  }
-}
-
-onMounted(async () => {
-  // Check if device has camera
-  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-    // Use video without audio
-    const constraints: MediaStreamConstraints = {
-      video: {
-        facingMode: hasTouchScreen.value ? 'environment' : 'user'
-      },
-      audio: false
+  if (video.value && video.value.srcObject) {
+    const codes = (await codeDetector.value?.detect(video.value)) || []
+    if (codes.length > 0) {
+      emit('update:modelValue', codes[0].rawValue)
+      clearInterval(detectInterval.value)
+    } else {
+      emit('update:modelValue', '')
     }
-
-    const stream: MediaStream = await navigator.mediaDevices.getUserMedia(constraints)
-
-    if (!video.value) return
-    video.value.srcObject = stream
-    detectInterval.value = setInterval(detectCode, 1000)
   }
-})
+}
 
 onBeforeUnmount(() => {
   clearInterval(detectInterval.value)
-  if (!video.value) return
+  stop()
+})
 
-  if (video.value && video.value.srcObject) {
-    const srcObject = video.value.srcObject as MediaStream
-    srcObject.getTracks().forEach((stream) => stream.stop())
+watchEffect(() => {
+  if (video.value) {
+    video.value.srcObject = stream.value as MediaStream
+    start()
+    detectInterval.value = setInterval(detectCode, 1000)
   }
 })
 </script>
 <template>
-  <div>
-    <video ref="video" width="640" height="480" autoplay></video>
-  </div>
+  <video ref="video" :width="width" :height="height" class="max-h-screen" autoplay />
 </template>
 
 <style scoped></style>
