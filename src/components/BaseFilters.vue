@@ -12,7 +12,7 @@ defineProps({
 const emit = defineEmits(['update:modelValue'])
 </script>
 <template>
-  <h2 class="text-h6 mb-2">Choose filters</h2>
+  <!-- <h2 class="text-h6 mb-2">Choose filters</h2> -->
 
   <v-chip-group
     :model-value="modelValue"

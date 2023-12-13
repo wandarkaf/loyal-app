@@ -31,7 +31,7 @@ const signOutUser = () => {
   <v-app-bar>
     <v-app-bar-nav-icon @click="$emit('update:modelValue', !modelValue)"></v-app-bar-nav-icon>
 
-    <v-app-bar-title>Companny Logo</v-app-bar-title>
+    <v-app-bar-title>Loyalty</v-app-bar-title>
 
     <template v-slot:append>
       <BaseThemeSwitch />

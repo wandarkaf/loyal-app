@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { shallowRef, watch } from 'vue'
+import { shallowRef, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 import { useFilters } from '@/composables/useFilters'
@@ -9,10 +9,11 @@ import { useCardStore } from '@/stores/CardStore'
 import { useUserStore } from '@/stores/UserStore'
 
 import BaseCard from '@/components/BaseCard.vue'
-import BaseListItem from '@/components/BaseListItem.vue'
 import BaseFilters from '@/components/BaseFilters.vue'
 import BaseBarcodeReader from '@/components/BaseBarcodeReader.vue'
 import BaseDialog from '@/components/BaseDialog.vue'
+import BaseDataTable from '@/components/BaseDataTable.vue'
+import { computed } from 'vue'
 
 const loyaltyStore = useLoyaltyStore()
 const cardStore = useCardStore()
@@ -77,31 +78,48 @@ watch(loyaltyCode, async (value) => {
     loyaltyCode.value = ''
   }
 })
+
+const headers = shallowRef([
+  { title: 'Name', key: 'username' },
+  { title: 'Email', key: 'email' },
+  { title: 'Actions', key: 'actions', sortable: false }
+])
+
+const items = computed(() => {
+  return loyaltyStore.loyalties.map((loyalty: any) => {
+    const { name: username, email } = userDetails(loyalty.userId)
+    return {
+      ...loyalty,
+      username,
+      email,
+      cardMaxCount: cardStore.card?.maxCount
+    }
+  })
+})
 </script>
 
 <template>
   <VContainer>
-    <BaseFilters v-model="selectedFilters" :items="filters" />
-    <BaseDialog ref="dialogRef" title="Scanner" v-model="dialog" v-slot="{ dimensions }">
-      <BaseBarcodeReader
-        v-model="loyaltyCode"
-        :width="dimensions.width"
-        :height="dimensions.height"
-      />
-    </BaseDialog>
-
-    <div class="flex flex-wrap gap-4">
-      <v-list class="grow">
-        <BaseListItem
-          v-for="loyalty in loyaltyStore.loyalties"
-          :key="loyalty.id"
-          :loyalty="loyalty"
-          :user="userDetails(loyalty.userId)"
-          :card="cardStore.card"
-          @stamp="upsertLoyalty(loyalty)"
-          @redeem="redeemLoyalty(loyalty)"
+    <div class="flex items-center mt-4 mb-6">
+      <BaseFilters v-model="selectedFilters" :items="filters" />
+      <VSpacer />
+      <BaseDialog ref="dialogRef" title="Scanner" v-model="dialog" v-slot="{ dimensions }">
+        <BaseBarcodeReader
+          v-model="loyaltyCode"
+          :width="dimensions.width"
+          :height="dimensions.height"
         />
-      </v-list>
+      </BaseDialog>
+    </div>
+
+    <div class="flex flex-wrap gap-6">
+      <BaseDataTable
+        class="flex-grow"
+        :headers="headers"
+        :items="items"
+        @stamp="(item) => upsertLoyalty(item)"
+        @redeem="(item) => redeemLoyalty(item)"
+      />
       <BaseCard v-if="cardStore.card" :card="cardStore.card" demo />
     </div>
   </VContainer>
