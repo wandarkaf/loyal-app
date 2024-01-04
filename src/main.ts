@@ -6,6 +6,8 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import { PiniaHistoryPlugin } from '@/plugins/PiniaHistoryPlugin'
 
+import VueGoogleMaps from '@fawmi/vue-google-maps'
+
 import App from './App.vue'
 import router from './router'
 
@@ -52,5 +54,10 @@ const app = createApp(App)
 app.use(vuetify)
 app.use(router)
 app.use(pinia)
+app.use(VueGoogleMaps, {
+  load: {
+    key: import.meta.env.VITE_FIREBASE_API_KEY
+  }
+})
 
 app.mount('#app')

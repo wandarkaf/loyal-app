@@ -37,13 +37,7 @@ const router = useRouter()
 
 const show = ref(false)
 
-const qrUrl = computed(
-  () =>
-    // `${import.meta.env.BASE_URL}loyalty/${props.loyalty.id}/${
-    //   props.loyalty.canBeRedeem ? 'redeem' : 'add'
-    // }`
-    `${props.loyalty.id}`
-)
+const qrUrl = computed(() => `${props.loyalty.id}`)
 
 const redeemMap = computed(() =>
   Array.from({ length: props.card.maxCount }, (_, i) =>
@@ -88,20 +82,19 @@ const addLoyalty = async () => {
   <VCard
     v-if="card.style"
     :style="cardStyle"
-    class="w-96"
     :image="card.style.backgroundImage"
     :title="card.name"
   >
     <template v-slot:append>
-      <v-chip v-if="loyalty.redeem" color="success" variant="flat" text-color="white" class=""
-        >Redeem</v-chip
-      >
-      <v-chip v-if="loyalty.canBeRedeem" color="warning" variant="flat" text-color="white"
-        >Redeemed</v-chip
-      >
+      <v-chip v-if="loyalty.redeem" color="success" variant="flat" text-color="white" class="">
+        Redeem
+      </v-chip>
+      <v-chip v-if="loyalty.canBeRedeem" color="warning" variant="flat" text-color="white">
+        Redeemed
+      </v-chip>
     </template>
     <v-card-text class="flex items-center h-fit">
-      <div v-if="card.maxCount" class="flex flex-wrap gap-4 justify-center">
+      <div v-if="card.maxCount" class="grid grid-cols-5 gap-4">
         <v-icon
           v-for="(item, index) in redeemMap"
           :key="`${index}${card.id}`"

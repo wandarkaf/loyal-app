@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import BaseParallax from '@/components/BaseParallax.vue'
 import BaseCard from '@/components/BaseCard.vue'
 import { useCardStore } from '@/stores/CardStore'
 import { useAuthStore } from '@/stores/AuthStore'
@@ -18,22 +17,17 @@ const cards = computed(() =>
 </script>
 
 <template>
-  <div>
-    <BaseParallax src="https://cdn.vuetifyjs.com/images/parallax/material.jpg" height="500">
-      <h2 class="mb-4 text-2xl">This will be a map</h2>
-      <h4 class="">yup!</h4>
-    </BaseParallax>
-    <VContainer>
-      <div class="grid-cols-3 grid gap-4">
-        <BaseCard
-          v-for="card in cards"
-          :key="card.id"
-          :card="card"
-          :canAddLoyalty="card.canAddLoyalty"
-          demo
-        />
-      </div>
-    </VContainer>
+  <div class="grid gap-4 grid-cols-3">
+    <div class="lg:grid-cols-3 md:grid-cols-2 grid gap-4 p-4 col-span-2">
+      <BaseCard
+        v-for="card in cards"
+        :key="card.id"
+        :card="card"
+        :canAddLoyalty="card.canAddLoyalty"
+        demo
+      />
+    </div>
+    <div class="bg-red-500"></div>
   </div>
 </template>
 
