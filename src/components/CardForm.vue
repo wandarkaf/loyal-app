@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import BaseMap from '@/components/BaseMap.vue'
 import BaseCard from '@/components/BaseCard.vue'
 import BaseColorPicker from '@/components/BaseColorPicker.vue'
 import { watch, ref, computed } from 'vue'
@@ -79,33 +80,6 @@ const handleImageUpload = (e: Event) => {
   reader.readAsDataURL(fileToUpload)
 }
 
-const markers = ref([
-  {
-    position: {
-      lat: 51.093048,
-      lng: 6.84212
-    }
-  },
-  {
-    position: {
-      lat: 51.198429,
-      lng: 6.69529
-    }
-  },
-  {
-    position: {
-      lat: 51.165218,
-      lng: 7.067116
-    }
-  },
-  {
-    position: {
-      lat: 51.09256,
-      lng: 6.84074
-    }
-  }
-])
-
 const getCoords = () => {
   console.log('get coords')
   console.log(
@@ -126,12 +100,11 @@ const getCoords = () => {
   }
 }
 
-const handlePinClick = (e: any) => {
-  console.log(e)
+const handlePinUpdate = (position: { lat: number; lng: number }) => {
+  console.log(position)
   cardLocation.value = {
     ...cardLocation.value,
-    lat: e.latLng.lat(),
-    lng: e.latLng.lng()
+    ...position
   }
 }
 
@@ -238,30 +211,11 @@ watch(
         <div class="col-span-3">
           <h3 class="text-xl mb-8">Location</h3>
           <div class="w-full h-96">
-            <GMapMap
+            <BaseMap
               :center="{ lat: cardLocation.lat, lng: cardLocation.lng }"
-              :zoom="16"
-              map-type-id="terrain"
-              class="w-full h-full"
-              :options="{
-                zoomControl: true,
-                mapTypeControl: true,
-                scaleControl: true,
-                streetViewControl: true,
-                rotateControl: true,
-                fullscreenControl: true
-              }"
-            >
-              <GMapMarker
-                v-for="(m, index) in [cardLocation]"
-                :key="index"
-                :position="{ lat: m.lat, lng: m.lng }"
-                :clickable="true"
-                :draggable="true"
-                @click="handlePinClick"
-                @dragend="handlePinClick"
-              />
-            </GMapMap>
+              :markers="[cardLocation]"
+              @handlePinUpdate="handlePinUpdate"
+            />
           </div>
 
           <VBtn
