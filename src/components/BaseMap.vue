@@ -7,6 +7,19 @@ defineProps({
   markers: {
     type: Array,
     required: true
+  },
+  mapProps: {
+    type: Object,
+    required: false,
+    default: () => ({
+      zoom: 16,
+      'map-type-id': 'terrain'
+    })
+  },
+  markerProps: {
+    type: Object,
+    required: false,
+    default: () => ({})
   }
 })
 
@@ -20,25 +33,21 @@ const handlePinUpdate = (e: any) => {
 }
 </script>
 <template>
-  <GMapMap
-    :center="center"
-    :zoom="16"
-    map-type-id="terrain"
-    class="w-full h-full"
-    :options="{
+  <GMapMap :center="center" v-bind="mapProps" class="w-full h-full">
+    <!-- :options="{
       zoomControl: true,
       mapTypeControl: true,
       scaleControl: true,
       streetViewControl: true,
       rotateControl: true,
       fullscreenControl: true
-    }"
-  >
+    }" -->
     <GMapMarker
       v-for="(marker, index) in markers"
       :key="index"
       :position="marker"
-      :draggable="true"
+      v-bind="markerProps"
+      @click="handlePinUpdate"
       @dragend="handlePinUpdate"
     />
   </GMapMap>

@@ -214,6 +214,7 @@ watch(
             <BaseMap
               :center="{ lat: cardLocation.lat, lng: cardLocation.lng }"
               :markers="[cardLocation]"
+              :markerProps="{ draggable: true }"
               @handlePinUpdate="handlePinUpdate"
             />
           </div>
