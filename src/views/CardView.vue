@@ -25,7 +25,6 @@ const markers = computed(() =>
 )
 
 const handlePinUpdate = (position: { lat: number; lng: number }) => {
-  console.log(position)
   center.value = {
     ...position
   }

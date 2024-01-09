@@ -29,7 +29,20 @@ const createCard = async (card: any) => {
 </script>
 <template>
   <VContainer>
-    <CardForm :card="{}" @submit="createCard">Create card</CardForm>
+    <CardForm
+      :card="{
+        id: '',
+        name: '',
+        description: '',
+        type: 'stamp',
+        maxCount: 10,
+        icon: 'mdi-coffee-outline',
+        loyalties: [],
+        users: []
+      }"
+      @submit="createCard"
+      >Create card</CardForm
+    >
   </VContainer>
 </template>
 
