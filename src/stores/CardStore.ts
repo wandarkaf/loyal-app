@@ -17,6 +17,7 @@ import {
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage'
 
 import { useAuthStore } from './AuthStore'
+import { useFileUpload } from '@/composables/useFileUpload'
 
 export const useCardStore = defineStore(
   'CardStore',
@@ -27,6 +28,7 @@ export const useCardStore = defineStore(
     const unsubscribes = ref<Unsubscribe[]>([])
 
     const authStore = useAuthStore()
+    const { filesToUpload } = useFileUpload()
 
     async function fetchCard(id: string) {
       const cardRef = await getDoc(doc(db, `cards/${id}`))
@@ -60,14 +62,14 @@ export const useCardStore = defineStore(
 
     async function createCard(payload: any) {
       try {
-        if (payload.filesToUpload) {
+        if (filesToUpload.value) {
           const uploadFiles = await Promise.all(
-            payload.filesToUpload.map((file: any) => uploadImage(file))
+            filesToUpload.value.map((file: any) => uploadImage(file))
           )
           uploadFiles.forEach((image: any) => {
             payload.style[image.key] = image.downloadURL
           })
-          delete payload.filesToUpload
+          filesToUpload.value = []
         }
         const cardRef = await addDoc(collection(db, 'cards'), {
           ...payload,
@@ -89,20 +91,23 @@ export const useCardStore = defineStore(
       )
       const uploadTask = await uploadBytes(storageReference, blob)
       const downloadURL = await getDownloadURL(uploadTask.ref)
+      console.log(downloadURL)
       return { key, downloadURL }
     }
 
     async function upsertCard(id: string, payload: any) {
       try {
         const cardRef = await doc(db, 'cards', id)
-        if (payload.filesToUpload) {
+        if (filesToUpload.value) {
+          console.log(filesToUpload.value)
           const uploadFiles = await Promise.all(
-            payload.filesToUpload.map((file: any) => uploadImage(file))
+            filesToUpload.value.map((file: any) => uploadImage(file))
           )
+          console.log(uploadFiles)
           uploadFiles.forEach((image: any) => {
             payload.style[image.key] = image.downloadURL
           })
-          delete payload.filesToUpload
+          filesToUpload.value = []
         }
         await updateDoc(cardRef, { ...payload })
         card.value = { ...card.value, ...payload }

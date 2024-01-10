@@ -8,6 +8,8 @@ import { useGeolocation } from '@vueuse/core'
 import isEqual from 'lodash/isEqual'
 import * as geofire from 'geofire-common'
 import { usePermission } from '@vueuse/core'
+import { useFileUpload } from '@/composables/useFileUpload'
+import type { styleKey, cardInfoType } from '@/types'
 
 const props = defineProps({
   card: {
@@ -20,18 +22,9 @@ const emit = defineEmits(['submit', 'reset'])
 
 const { coords } = useGeolocation()
 const geolocationAccess = usePermission('geolocation')
+const { handleFileUpload } = useFileUpload()
 
-const cardInfo = ref<{
-  id?: string
-  name?: string
-  description?: string
-  type?: string
-  maxCount?: number
-  icon?: string
-  loyalties?: string[]
-  users?: string[]
-  filesToUpload?: { key: string; blob: File }[] | null
-}>({
+const cardInfo = ref<cardInfoType>({
   id: '',
   name: '',
   description: '',
@@ -39,8 +32,7 @@ const cardInfo = ref<{
   maxCount: 10,
   icon: 'mdi-coffee-outline',
   loyalties: [],
-  users: [],
-  filesToUpload: []
+  users: []
 })
 const cardStyle = ref({
   backgroundImage: '',
@@ -65,15 +57,8 @@ const isDisabled = computed(
     isEqual(cardLocation.value, props.card.location)
 )
 
-const handleImageUpload = (e: Event, key: 'backgroundImage' | 'stampActiveImage') => {
-  const inputElement = e.target as HTMLInputElement
-  const fileToUpload = inputElement.files ? inputElement.files[0] : null
-  cardInfo.value.filesToUpload = [{ key, blob: fileToUpload as File }]
-  const reader = new FileReader()
-  reader.onload = (event) => {
-    cardStyle.value[key] = event.target ? (event.target.result as string) : ''
-  }
-  reader.readAsDataURL(fileToUpload as Blob)
+const setStyleKeyValue = (key: string, value: string) => {
+  cardStyle.value[key as styleKey] = value
 }
 
 const getCoords = () => {
@@ -134,7 +119,7 @@ watch(
           :imageSource="cardStyle.backgroundImage || ''"
           inputId="backgroundImage"
           label="Background image"
-          @change="($event) => handleImageUpload($event, 'backgroundImage')"
+          @change.stop="($event) => handleFileUpload($event, 'backgroundImage', setStyleKeyValue)"
         />
         <BaseColorPicker v-model="cardStyle.backgroundColor">Background</BaseColorPicker>
         <BaseColorPicker v-model="cardStyle.color">text</BaseColorPicker>
@@ -149,6 +134,12 @@ watch(
         />
       </div>
       <div class="flex flex-col gap-2">
+        <BaseFileInput
+          :imageSource="cardStyle.stampActiveImage || ''"
+          inputId="stampActiveImage"
+          label="Stamp active image"
+          @change.stop="($event) => handleFileUpload($event, 'stampActiveImage', setStyleKeyValue)"
+        />
         <BaseColorPicker v-model="cardStyle.stampActiveColor">Active stamp</BaseColorPicker>
         <BaseColorPicker v-model="cardStyle.stampInactiveColor"> Default stamp </BaseColorPicker>
         <VTextField v-model="cardInfo.maxCount" label="Max count" type="number" />
