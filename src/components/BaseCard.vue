@@ -39,13 +39,26 @@ const show = ref(false)
 
 const qrUrl = computed(() => `${props.loyalty.id}`)
 
-const redeemMap = computed(() =>
-  Array.from({ length: props.card.maxCount }, (_, i) =>
-    i < props.loyalty.count
-      ? props.card.style.stampActiveColor
-      : props.card.style.stampInactiveColor
+const redeemMap = computed(() => {
+  const { count } = props.loyalty
+  const { maxCount } = props.card
+  const {
+    hasCustomStamp,
+    stampActiveColor,
+    stampActiveImage,
+    stampInactiveColor,
+    stampDefaultImage
+  } = props.card.style
+  return Array.from({ length: maxCount }, (_, i) =>
+    i < count
+      ? hasCustomStamp
+        ? stampActiveImage
+        : stampActiveColor
+      : hasCustomStamp
+        ? stampDefaultImage
+        : stampInactiveColor
   )
-)
+})
 
 const cardStyle = computed(() => {
   return {
@@ -95,13 +108,24 @@ const addLoyalty = async () => {
     </template>
     <v-card-text class="flex items-center h-fit">
       <div v-if="card.maxCount" class="grid grid-cols-5 gap-4">
-        <v-icon
-          v-for="(item, index) in redeemMap"
-          :key="`${index}${card.id}`"
-          :size="56"
-          :icon="card.icon"
-          :color="item"
-        ></v-icon>
+        <template v-if="card.style.hasCustomStamp">
+          <v-img
+            v-for="(item, index) in redeemMap"
+            :key="`${index}${card.id}`"
+            :src="item"
+            width="56"
+            height="56"
+          />
+        </template>
+        <template v-else>
+          <v-icon
+            v-for="(item, index) in redeemMap"
+            :key="`${index}${card.id}`"
+            :size="56"
+            :icon="card.style.icon"
+            :color="item"
+          ></v-icon>
+        </template>
       </div>
     </v-card-text>
 

@@ -1,4 +1,4 @@
-export type styleKey = 'backgroundImage' | 'stampActiveImage'
+export type styleKey = 'backgroundImage' | 'stampActiveImage' | 'stampDefaultImage' | 'icon'
 export type cardInfoType = {
   id?: string
   name?: string

@@ -16,8 +16,8 @@ defineProps({
 </script>
 <template>
   <div>
-    <label :for="inputId">
-      <v-img v-if="imageSource" :src="imageSource" />
+    <label :for="inputId" class="cursor-pointer">
+      <v-img v-if="imageSource" :src="imageSource" width="100" height="100" class="m-auto" />
     </label>
     <v-file-input
       :id="inputId"

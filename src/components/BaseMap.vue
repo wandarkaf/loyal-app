@@ -46,7 +46,12 @@ const handlePinUpdate = (e: any) => {
       v-for="(marker, index) in markers"
       :key="index"
       :position="marker"
-      v-bind="markerProps"
+      v-bind="{
+        markerProps,
+        ...(marker.icon
+          ? { icon: { url: marker.icon, scaledSize: { width: 40, height: 40 } } }
+          : {})
+      }"
       @click="handlePinUpdate"
       @dragend="handlePinUpdate"
     />

@@ -18,10 +18,15 @@ const cards = computed(() =>
 
 const center = shallowRef({ lat: 0, lng: 0 })
 const markers = computed(() =>
-  cards.value.map((card: any) => ({
-    lat: card.location.lat,
-    lng: card.location.lng
-  }))
+  cards.value.map((card: any) =>
+    Object.assign(
+      {
+        lat: card.location.lat,
+        lng: card.location.lng
+      },
+      card.location.icon ? { icon: card.location.icon } : {}
+    )
+  )
 )
 
 const handlePinUpdate = (position: { lat: number; lng: number }) => {

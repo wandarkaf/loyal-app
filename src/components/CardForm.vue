@@ -26,7 +26,6 @@ const geolocationAccess = usePermission('geolocation')
 const { handleFileUpload } = useFileUpload()
 
 const tab = shallowRef(null)
-const hasCustomStamp = shallowRef(false)
 
 const cardInfo = ref<cardInfoType>({
   id: '',
@@ -34,7 +33,6 @@ const cardInfo = ref<cardInfoType>({
   description: '',
   type: 'stamp',
   maxCount: 10,
-  icon: 'mdi-coffee-outline',
   loyalties: [],
   users: []
 })
@@ -44,11 +42,15 @@ const cardStyle = ref({
   borderColor: '',
   stampActiveColor: '',
   stampActiveImage: '',
+  stampDefaultImage: '',
   stampInactiveColor: '',
   color: '',
-  borderWidth: 0
+  borderWidth: 0,
+  icon: 'mdi-coffee-outline',
+  hasCustomStamp: false
 })
 const cardLocation = ref({
+  icon: 'mdi-coffee-outline',
   geohash: null,
   lat: 0,
   lng: 0
@@ -63,6 +65,9 @@ const isDisabled = computed(
 
 const setStyleKeyValue = (key: string, value: string) => {
   cardStyle.value[key as styleKey] = value
+}
+const setLocationKeyValue = (key: string, value: string) => {
+  cardLocation.value[key as styleKey] = value
 }
 
 const getCoords = () => {
@@ -93,7 +98,7 @@ const submit = () => {
   ] as any)
   emit('submit', {
     ...cardInfo.value,
-    style: cardStyle.value,
+    style: { ...cardStyle.value },
     location: { ...cardLocation.value, hash: geohash }
   })
 }
@@ -128,6 +133,12 @@ watch(
             <VTextField v-model="cardInfo.name" label="Name" required />
             <VTextField v-model="cardInfo.maxCount" label="Max count" type="number" />
             <VTextarea v-model="cardInfo.description" label="Description" counter="500" noResize />
+            <BaseFileInput
+              :imageSource="cardLocation.icon || ''"
+              inputId="iconImage"
+              label="Icon"
+              @change.stop="($event) => handleFileUpload($event, 'icon', setLocationKeyValue)"
+            />
             <VBtn
               v-if="geolocationAccess === 'granted'"
               @click="getCoords"
@@ -180,16 +191,28 @@ watch(
             </div>
           </div>
           <div class="basis-1/2 flex flex-col gap-2">
-            <template v-if="hasCustomStamp">
-              <BaseFileInput
-                :imageSource="cardStyle.stampActiveImage || ''"
-                inputId="stampActiveImage"
-                label="Stamp active image"
-                @change.stop="
-                  ($event) => handleFileUpload($event, 'stampActiveImage', setStyleKeyValue)
-                "
-              />
-            </template>
+            <div v-if="cardStyle.hasCustomStamp" class="flex gap-2">
+              <div class="basis-1/2">
+                <BaseFileInput
+                  :imageSource="cardStyle.stampDefaultImage || ''"
+                  inputId="stampDefaultImage"
+                  label="Stamp default image"
+                  @change.stop="
+                    ($event) => handleFileUpload($event, 'stampDefaultImage', setStyleKeyValue)
+                  "
+                />
+              </div>
+              <div class="basis-1/2">
+                <BaseFileInput
+                  :imageSource="cardStyle.stampActiveImage || ''"
+                  inputId="stampActiveImage"
+                  label="Stamp active image"
+                  @change.stop="
+                    ($event) => handleFileUpload($event, 'stampActiveImage', setStyleKeyValue)
+                  "
+                />
+              </div>
+            </div>
             <template v-else>
               <BaseColorPicker v-model="cardStyle.stampActiveColor">Active stamp</BaseColorPicker>
               <BaseColorPicker v-model="cardStyle.stampInactiveColor">
@@ -197,7 +220,7 @@ watch(
               </BaseColorPicker>
 
               <v-select
-                v-model="cardInfo.icon"
+                v-model="cardStyle.icon"
                 label="Icon"
                 :items="[
                   'mdi-coffee-outline',
@@ -211,7 +234,14 @@ watch(
                 ]"
               ></v-select>
             </template>
-            <v-switch v-model="hasCustomStamp" label="Custom stamp" inset></v-switch>
+            <div>
+              <v-switch
+                v-model="cardStyle.hasCustomStamp"
+                label="Custom stamp"
+                color="primary"
+                inset
+              ></v-switch>
+            </div>
           </div>
         </div>
       </v-window-item>

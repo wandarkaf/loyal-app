@@ -91,7 +91,7 @@ export const useCardStore = defineStore(
       )
       const uploadTask = await uploadBytes(storageReference, blob)
       const downloadURL = await getDownloadURL(uploadTask.ref)
-      console.log(downloadURL)
+
       return { key, downloadURL }
     }
 
@@ -99,13 +99,12 @@ export const useCardStore = defineStore(
       try {
         const cardRef = await doc(db, 'cards', id)
         if (filesToUpload.value) {
-          console.log(filesToUpload.value)
           const uploadFiles = await Promise.all(
             filesToUpload.value.map((file: any) => uploadImage(file))
           )
           console.log(uploadFiles)
           uploadFiles.forEach((image: any) => {
-            payload.style[image.key] = image.downloadURL
+            payload[image.key === 'icon' ? 'location' : 'style'][image.key] = image.downloadURL
           })
           filesToUpload.value = []
         }
