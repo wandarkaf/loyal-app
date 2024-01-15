@@ -23,10 +23,10 @@ defineProps({
   }
 })
 
-const emit = defineEmits(['handlePinUpdate'])
+const emit = defineEmits(['handleCoordsUpdate'])
 
-const handlePinUpdate = (e: any) => {
-  emit('handlePinUpdate', {
+const handleCoordsUpdate = (e: any) => {
+  emit('handleCoordsUpdate', {
     lat: e.latLng.lat(),
     lng: e.latLng.lng()
   })
@@ -52,8 +52,8 @@ const handlePinUpdate = (e: any) => {
           ? { icon: { url: marker.icon, scaledSize: { width: 40, height: 40 } } }
           : {})
       }"
-      @click="handlePinUpdate"
-      @dragend="handlePinUpdate"
+      @click="handleCoordsUpdate"
+      @dragend="handleCoordsUpdate"
     />
   </GMapMap>
 </template>

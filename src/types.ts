@@ -1,4 +1,5 @@
-export type styleKey = 'backgroundImage' | 'stampActiveImage' | 'stampDefaultImage' | 'icon'
+export type styleKey = 'backgroundImage' | 'stampActiveImage' | 'stampDefaultImage'
+export type locationKey = 'icon'
 export type cardInfoType = {
   id?: string
   name?: string
@@ -8,4 +9,11 @@ export type cardInfoType = {
   icon?: string
   loyalties?: string[]
   users?: string[]
+}
+
+export type cardLocationType = {
+  icon?: string
+  geohash?: string
+  lat: number
+  lng: number
 }

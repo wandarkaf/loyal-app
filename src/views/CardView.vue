@@ -1,12 +1,18 @@
 <script setup lang="ts">
-import BaseCard from '@/components/BaseCard.vue'
-import BaseMap from '@/components/BaseMap.vue'
+import { computed, shallowRef, watch } from 'vue'
 import { useCardStore } from '@/stores/CardStore'
 import { useAuthStore } from '@/stores/AuthStore'
-import { computed, shallowRef, watch } from 'vue'
+import BaseCard from '@/components/BaseCard.vue'
+import BaseMap from '@/components/BaseMap.vue'
+import { useDevicePermission } from '@/composables/useDevicePermission'
+import { useGeolocation } from '@/composables/useGeolocation'
+import { h } from 'vue'
 
 const authStore = useAuthStore()
 const cardStore = useCardStore()
+const { geolocationAccess } = useDevicePermission()
+const { coords } = useGeolocation()
+
 cardStore.fetchAllCards()
 
 const cards = computed(() =>
@@ -17,28 +23,42 @@ const cards = computed(() =>
 )
 
 const center = shallowRef({ lat: 0, lng: 0 })
+const highlightCard = shallowRef(null)
+
+const showMap = computed(() => cards.value.length > 0 && center.value.lat !== 0)
+
 const markers = computed(() =>
-  cards.value.map((card: any) =>
-    Object.assign(
-      {
-        lat: card.location.lat,
-        lng: card.location.lng
-      },
-      card.location.icon ? { icon: card.location.icon } : {}
-    )
-  )
+  cards.value.map((card: any) => ({
+    lat: card.location.lat,
+    lng: card.location.lng,
+    ...(card.location.icon ? { icon: card.location.icon } : {})
+  }))
 )
 
-const handlePinUpdate = (position: { lat: number; lng: number }) => {
+const handleCoordsUpdate = (position: { lat: number; lng: number }) => {
   center.value = {
     ...position
   }
+  highlightCard.value =
+    cards.value.find(
+      (card: any) => card.location.lat === position.lat && card.location.lng === position.lng
+    ) || null
 }
 
 watch(cards, (cards: any) => {
-  center.value = {
-    lat: cards[0].location.lat,
-    lng: cards[0].location.lng
+  console.log(cards)
+  if (cards.length > 0) {
+    if (geolocationAccess.value && coords.value.latitude !== Infinity) {
+      center.value = {
+        lat: coords.value.latitude,
+        lng: coords.value.longitude
+      }
+    } else {
+      center.value = {
+        lat: cards[0].location.lat,
+        lng: cards[0].location.lng
+      }
+    }
   }
 })
 </script>
@@ -47,12 +67,12 @@ watch(cards, (cards: any) => {
   <div class="grid lg:gap-4 lg:grid-cols-3 md:grid-cols-1 sm:grid-cols-1">
     <div class="min-h-96 lg:order-last">
       <BaseMap
-        v-if="cards.length > 0"
+        v-if="showMap"
         :center="center"
         :markers="markers"
         :mapProps="{ zoom: 15 }"
         :markerProps="{ clickable: true }"
-        @handlePinUpdate="handlePinUpdate"
+        @handleCoordsUpdate="handleCoordsUpdate"
       />
     </div>
     <div class="lg:grid-cols-3 md:grid-cols-2 grid gap-4 p-4 col-span-2">
@@ -61,6 +81,7 @@ watch(cards, (cards: any) => {
         :key="card.id"
         :card="card"
         :canAddLoyalty="card.canAddLoyalty"
+        :highlight="highlightCard && highlightCard.id === card.id"
         demo
       />
     </div>

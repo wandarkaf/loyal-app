@@ -1,16 +1,15 @@
 <script setup lang="ts">
+import { watch, ref, computed, shallowRef } from 'vue'
+import { useGeolocation } from '@/composables/useGeolocation'
+import { useFileUpload } from '@/composables/useFileUpload'
+import { useDevicePermission } from '@/composables/useDevicePermission'
 import BaseMap from '@/components/BaseMap.vue'
 import BaseCard from '@/components/BaseCard.vue'
 import BaseColorPicker from '@/components/BaseColorPicker.vue'
 import BaseFileInput from '@/components/BaseFileInput.vue'
-import { watch, ref, computed } from 'vue'
-import { useGeolocation } from '@vueuse/core'
 import isEqual from 'lodash/isEqual'
 import * as geofire from 'geofire-common'
-import { usePermission } from '@vueuse/core'
-import { useFileUpload } from '@/composables/useFileUpload'
-import type { styleKey, cardInfoType } from '@/types'
-import { shallowRef } from 'vue'
+import type { styleKey, locationKey, cardInfoType, cardLocationType } from '@/types'
 
 const props = defineProps({
   card: {
@@ -22,8 +21,8 @@ const props = defineProps({
 const emit = defineEmits(['submit', 'reset'])
 
 const { coords } = useGeolocation()
-const geolocationAccess = usePermission('geolocation')
 const { handleFileUpload } = useFileUpload()
+const { geolocationAccess } = useDevicePermission()
 
 const tab = shallowRef(null)
 
@@ -49,9 +48,7 @@ const cardStyle = ref({
   icon: 'mdi-coffee-outline',
   hasCustomStamp: false
 })
-const cardLocation = ref({
-  icon: 'mdi-coffee-outline',
-  geohash: null,
+const cardLocation = ref<cardLocationType>({
   lat: 0,
   lng: 0
 })
@@ -67,18 +64,10 @@ const setStyleKeyValue = (key: string, value: string) => {
   cardStyle.value[key as styleKey] = value
 }
 const setLocationKeyValue = (key: string, value: string) => {
-  cardLocation.value[key as styleKey] = value
+  cardLocation.value[key as locationKey] = value
 }
 
-const getCoords = () => {
-  cardLocation.value = {
-    ...cardLocation.value,
-    lat: coords.value.latitude,
-    lng: coords.value.longitude
-  }
-}
-
-const handlePinUpdate = (position: { lat: number; lng: number }) => {
+const handleCoordsUpdate = (position: { lat: number; lng: number }) => {
   cardLocation.value = {
     ...cardLocation.value,
     ...position
@@ -141,7 +130,7 @@ watch(
             />
             <VBtn
               v-if="geolocationAccess === 'granted'"
-              @click="getCoords"
+              @click="handleCoordsUpdate({ lat: coords.latitude, lng: coords.longitude })"
               :loading="(coords.latitude && coords.longitude) === Infinity"
               :disabled="(coords.latitude && coords.longitude) === Infinity"
               prepend-icon="mdi-map-marker"
@@ -154,7 +143,7 @@ watch(
               :center="{ lat: cardLocation.lat, lng: cardLocation.lng }"
               :markers="[cardLocation]"
               :markerProps="{ draggable: true }"
-              @handlePinUpdate="handlePinUpdate"
+              @handleCoordsUpdate="handleCoordsUpdate"
             />
           </div>
         </div>
@@ -166,9 +155,9 @@ watch(
               <div class="basis-1/2 flex flex-col gap-2">
                 <BaseColorPicker v-model="cardStyle.color">Text color</BaseColorPicker>
                 <BaseColorPicker v-model="cardStyle.borderColor">Border</BaseColorPicker>
-                <BaseColorPicker v-model="cardStyle.backgroundColor"
-                  >Background color</BaseColorPicker
-                >
+                <BaseColorPicker v-model="cardStyle.backgroundColor">
+                  Background color
+                </BaseColorPicker>
               </div>
               <div class="grow">
                 <BaseFileInput

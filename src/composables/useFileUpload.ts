@@ -1,10 +1,9 @@
 import { ref } from 'vue'
-import type { styleKey } from '@/types'
 
 const filesToUpload = ref<{ key: string; blob: File }[] | null>([])
 
 export function useFileUpload() {
-  const handleFileUpload = (e: Event, key: styleKey, cb: (key: string, value: string) => void) => {
+  const handleFileUpload = (e: Event, key: string, cb: (key: string, value: string) => void) => {
     const inputElement = e.target as HTMLInputElement
     const fileToUpload = inputElement.files ? inputElement.files[0] : null
     if (fileToUpload) {

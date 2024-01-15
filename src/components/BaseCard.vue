@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, h } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCardStore } from '@/stores/CardStore'
 import { useUserStore } from '@/stores/UserStore'
@@ -28,6 +28,10 @@ const props = defineProps({
     default: false
   },
   demo: {
+    type: Boolean,
+    default: false
+  },
+  highlight: {
     type: Boolean,
     default: false
   }
@@ -97,6 +101,8 @@ const addLoyalty = async () => {
     :style="cardStyle"
     :image="card.style.backgroundImage"
     :title="card.name"
+    :elevation="highlight ? 14 : 4"
+    hover
   >
     <template v-slot:append>
       <v-chip v-if="loyalty.redeem" color="success" variant="flat" text-color="white" class="">
