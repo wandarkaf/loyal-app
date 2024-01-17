@@ -8,8 +8,7 @@ import BaseCard from '@/components/BaseCard.vue'
 import BaseColorPicker from '@/components/BaseColorPicker.vue'
 import BaseFileInput from '@/components/BaseFileInput.vue'
 import isEqual from 'lodash/isEqual'
-import * as geofire from 'geofire-common'
-import type { styleKey, locationKey, cardInfoType, cardLocationType } from '@/types'
+import type { infoKey, styleKey, locationKey, cardInfoType, cardLocationType } from '@/types'
 
 const props = defineProps({
   card: {
@@ -20,7 +19,7 @@ const props = defineProps({
 
 const emit = defineEmits(['submit', 'reset'])
 
-const { coords } = useGeolocation()
+const { coords, getGeohash } = useGeolocation()
 const { handleFileUpload } = useFileUpload()
 const { geolocationAccess } = useDevicePermission()
 
@@ -60,6 +59,10 @@ const isDisabled = computed(
     isEqual(cardLocation.value, props.card.location)
 )
 
+const setInfoKeyValue = (key: string, value: string) => {
+  cardInfo.value[key as infoKey] = value
+}
+
 const setStyleKeyValue = (key: string, value: string) => {
   cardStyle.value[key as styleKey] = value
 }
@@ -81,14 +84,10 @@ const reset = () => {
 }
 
 const submit = () => {
-  const geohash = geofire.geohashForLocation([
-    cardLocation.value.lat,
-    cardLocation.value.lng
-  ] as any)
   emit('submit', {
     ...cardInfo.value,
     style: { ...cardStyle.value },
-    location: { ...cardLocation.value, hash: geohash }
+    location: { ...cardLocation.value, geoHash: getGeohash(cardLocation.value) }
   })
 }
 
@@ -120,6 +119,12 @@ watch(
         <div class="flex gap-4 m-4">
           <div class="flex flex-col basis-1/3">
             <VTextField v-model="cardInfo.name" label="Name" required />
+            <BaseFileInput
+              :imageSource="cardInfo.logo || ''"
+              inputId="logoImage"
+              label="Logo"
+              @change.stop="($event) => handleFileUpload($event, 'logo', setInfoKeyValue)"
+            />
             <VTextField v-model="cardInfo.maxCount" label="Max count" type="number" />
             <VTextarea v-model="cardInfo.description" label="Description" counter="500" noResize />
             <BaseFileInput

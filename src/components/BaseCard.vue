@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, h } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCardStore } from '@/stores/CardStore'
 import { useUserStore } from '@/stores/UserStore'
@@ -84,9 +84,9 @@ const addLoyalty = async () => {
     users: [...props.card.users, authStore.authUser?.uid]
   })
   // update user loyalties
-  userStore.upsertUser(authStore.authUser?.uid, {
-    loyalties: [...authStore.authUser.loyalties, newLoyalty?.id],
-    cards: [...authStore.authUser.cards, props.card.id]
+  userStore.upsertUser(authStore.authUser?.uid ?? '', {
+    loyalties: [...(authStore.authUser?.loyalties ?? []), newLoyalty?.id],
+    cards: [...(authStore.authUser?.cards ?? []), props.card.id]
   })
   // refresh data
   // loyaltyStore.fetchLoyalties({ id: route.params.id as string, filters: selectedFilters.value })
@@ -100,7 +100,6 @@ const addLoyalty = async () => {
     v-if="card.style"
     :style="cardStyle"
     :image="card.style.backgroundImage"
-    :title="card.name"
     :elevation="highlight ? 14 : 4"
     hover
   >
@@ -112,6 +111,10 @@ const addLoyalty = async () => {
         Redeemed
       </v-chip>
     </template>
+    <v-card-title>
+      <v-img v-if="card.logo" :src="card.logo" height="44" />
+      <span v-else class="">{{ card.name }}</span>
+    </v-card-title>
     <v-card-text class="flex items-center h-fit">
       <div v-if="card.maxCount" class="grid grid-cols-5 gap-4">
         <template v-if="card.style.hasCustomStamp">

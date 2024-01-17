@@ -20,7 +20,7 @@ export const useAuthStore = defineStore(
   'AuthStore',
   () => {
     const userStore = useUserStore()
-    const authUser = ref<User | null>(null)
+    const authUser = ref<(User & { cards?: number[]; loyalties?: number[] }) | null>(null)
     const authUserUnsubscribe = ref<Unsubscribe | null>(null)
     const authObserverUnsubscribe = ref<Unsubscribe | null>(null)
 

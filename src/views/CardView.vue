@@ -2,28 +2,44 @@
 import { computed, shallowRef, watch } from 'vue'
 import { useCardStore } from '@/stores/CardStore'
 import { useAuthStore } from '@/stores/AuthStore'
-import BaseCard from '@/components/BaseCard.vue'
-import BaseMap from '@/components/BaseMap.vue'
 import { useDevicePermission } from '@/composables/useDevicePermission'
 import { useGeolocation } from '@/composables/useGeolocation'
-import { h } from 'vue'
+import BaseCard from '@/components/BaseCard.vue'
+import BaseMap from '@/components/BaseMap.vue'
+
+import type { coordinates } from '@/types'
 
 const authStore = useAuthStore()
 const cardStore = useCardStore()
 const { geolocationAccess } = useDevicePermission()
 const { coords } = useGeolocation()
 
-cardStore.fetchAllCards()
+const center = computed(() => {
+  if (geolocationAccess.value === 'granted' && coords.value.latitude !== Infinity) {
+    return {
+      lat: coords.value.latitude,
+      lng: coords.value.longitude
+    }
+  }
+  if (geolocationAccess.value === 'denied') {
+    return {
+      lat: cards.value[0].location.lat,
+      lng: cards.value[0].location.lng
+    }
+  }
+  return {
+    lat: 0,
+    lng: 0
+  }
+})
+const highlightCard = shallowRef({ id: 0 })
 
 const cards = computed(() =>
   cardStore.cards.map((card: any) => ({
     ...card,
-    canAddLoyalty: !authStore.authUser?.cards.includes(card.id)
+    canAddLoyalty: !authStore.authUser?.cards?.includes(card.id) || false
   }))
 )
-
-const center = shallowRef({ lat: 0, lng: 0 })
-const highlightCard = shallowRef(null)
 
 const showMap = computed(() => cards.value.length > 0 && center.value.lat !== 0)
 
@@ -35,30 +51,21 @@ const markers = computed(() =>
   }))
 )
 
-const handleCoordsUpdate = (position: { lat: number; lng: number }) => {
-  center.value = {
-    ...position
-  }
+const handleCoordsUpdate = (position: coordinates) => {
   highlightCard.value =
     cards.value.find(
       (card: any) => card.location.lat === position.lat && card.location.lng === position.lng
-    ) || null
+    ) || {}
 }
 
-watch(cards, (cards: any) => {
-  console.log(cards)
-  if (cards.length > 0) {
-    if (geolocationAccess.value && coords.value.latitude !== Infinity) {
-      center.value = {
-        lat: coords.value.latitude,
-        lng: coords.value.longitude
-      }
-    } else {
-      center.value = {
-        lat: cards[0].location.lat,
-        lng: cards[0].location.lng
-      }
-    }
+watch([coords, geolocationAccess], async ([coords, geolocationAccess]) => {
+  if (geolocationAccess === 'granted' && coords.latitude !== Infinity) {
+    cardStore.fetchCardsByLocation({
+      center: center.value as any
+    })
+  }
+  if (geolocationAccess === 'denied') {
+    cardStore.fetchAllCards()
   }
 })
 </script>
@@ -81,7 +88,7 @@ watch(cards, (cards: any) => {
         :key="card.id"
         :card="card"
         :canAddLoyalty="card.canAddLoyalty"
-        :highlight="highlightCard && highlightCard.id === card.id"
+        :highlight="highlightCard !== null && highlightCard.id === card.id"
         demo
       />
     </div>

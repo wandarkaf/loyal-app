@@ -47,7 +47,7 @@ const handleCoordsUpdate = (e: any) => {
       :key="index"
       :position="marker"
       v-bind="{
-        markerProps,
+        ...markerProps,
         ...(marker.icon
           ? { icon: { url: marker.icon, scaledSize: { width: 40, height: 40 } } }
           : {})

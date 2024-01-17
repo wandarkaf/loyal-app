@@ -1,6 +1,8 @@
 import { ref } from 'vue'
 import { defineStore, acceptHMRUpdate } from 'pinia'
 import { db, collection } from '@/firebase'
+import { useGeolocation } from '@/composables/useGeolocation'
+
 import type { DocumentData, Unsubscribe } from 'firebase/firestore'
 import {
   doc,
@@ -19,6 +21,8 @@ import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'fire
 import { useAuthStore } from './AuthStore'
 import { useFileUpload } from '@/composables/useFileUpload'
 
+import type { coordinates } from '@/types'
+
 export const useCardStore = defineStore(
   'CardStore',
   () => {
@@ -28,6 +32,7 @@ export const useCardStore = defineStore(
     const unsubscribes = ref<Unsubscribe[]>([])
 
     const authStore = useAuthStore()
+    const { distanceBetween } = useGeolocation()
     const { filesToUpload } = useFileUpload()
 
     async function fetchCard(id: string) {
@@ -42,6 +47,23 @@ export const useCardStore = defineStore(
         cards.value = doc.docs.map((doc) => {
           return { id: doc.id, ...doc.data() }
         })
+      })
+      unsubscribes.value = [...unsubscribes.value, unsubscribe]
+    }
+
+    async function fetchCardsByLocation({ center }: { center: coordinates }) {
+      const unsubscribe = onSnapshot(collection(db, 'cards'), (doc) => {
+        const cardDistanceArray = doc.docs.map((doc) => {
+          const lat = doc.data().location.lat
+          const lng = doc.data().location.lng
+          const distanceInKm = distanceBetween({ lat, lng, center })
+          const distanceInM = distanceInKm * 1000
+          if (distanceInM <= 2 * 1000) {
+            return { id: doc.id, ...doc.data(), distanceInM }
+          }
+        })
+
+        cards.value = cardDistanceArray.sort((a: any, b: any) => a.distanceInM - b.distanceInM)
       })
       unsubscribes.value = [...unsubscribes.value, unsubscribe]
     }
@@ -102,9 +124,15 @@ export const useCardStore = defineStore(
           const uploadFiles = await Promise.all(
             filesToUpload.value.map((file: any) => uploadImage(file))
           )
-          console.log(uploadFiles)
           uploadFiles.forEach((image: any) => {
-            payload[image.key === 'icon' ? 'location' : 'style'][image.key] = image.downloadURL
+            if (image.key === 'icon') {
+              payload.location[image.key] = image.downloadURL
+            }
+            if (image.key === 'logo') {
+              payload[image.key] = image.downloadURL
+            } else {
+              payload.style[image.key] = image.downloadURL
+            }
           })
           filesToUpload.value = []
         }
@@ -136,6 +164,7 @@ export const useCardStore = defineStore(
       fetchCard,
       fetchCards,
       fetchAllCards,
+      fetchCardsByLocation,
       createCard,
       upsertCard,
       deleteCard,

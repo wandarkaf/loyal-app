@@ -1,8 +1,11 @@
 export type styleKey = 'backgroundImage' | 'stampActiveImage' | 'stampDefaultImage'
 export type locationKey = 'icon'
+export type infoKey = 'logo'
+
 export type cardInfoType = {
   id?: string
   name?: string
+  logo?: string
   description?: string
   type?: string
   maxCount?: number
@@ -17,3 +20,5 @@ export type cardLocationType = {
   lat: number
   lng: number
 }
+
+export type coordinates = { lat: number; lng: number }
