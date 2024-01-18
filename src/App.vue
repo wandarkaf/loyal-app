@@ -2,7 +2,7 @@
 import { RouterView } from 'vue-router'
 import { shallowRef } from 'vue'
 
-import TheSystemBar from './components/TheSystemBar.vue'
+// import TheSystemBar from './components/TheSystemBar.vue'
 import TheAppBar from './components/TheAppBar.vue'
 import TheNavigationDrawer from './components/TheNavigationDrawer.vue'
 import TheControlBar from './components/TheControlBar.vue'
@@ -14,7 +14,7 @@ const drawer = shallowRef(false)
 
 <template>
   <VApp class="relative">
-    <TheSystemBar />
+    <!-- <TheSystemBar /> -->
     <TheAppBar v-model="drawer" />
     <TheNavigationDrawer v-model="drawer" />
     <VMain>

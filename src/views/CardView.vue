@@ -14,6 +14,8 @@ const cardStore = useCardStore()
 const { geolocationAccess } = useDevicePermission()
 const { coords } = useGeolocation()
 
+const highlightCard = shallowRef({ id: 0 })
+
 const center = computed(() => {
   if (geolocationAccess.value === 'granted' && coords.value.latitude !== Infinity) {
     return {
@@ -32,7 +34,6 @@ const center = computed(() => {
     lng: 0
   }
 })
-const highlightCard = shallowRef({ id: 0 })
 
 const cards = computed(() =>
   cardStore.cards.map((card: any) => ({
@@ -40,8 +41,6 @@ const cards = computed(() =>
     canAddLoyalty: !authStore.authUser?.cards?.includes(card.id) || false
   }))
 )
-
-const showMap = computed(() => cards.value.length > 0 && center.value.lat !== 0)
 
 const markers = computed(() =>
   cards.value.map((card: any) => ({
@@ -63,6 +62,8 @@ const markers = computed(() =>
     }
   }))
 )
+
+const loading = computed(() => !(cards.value.length > 0 && center.value.lat !== 0))
 
 const handleCoordsUpdate = (position: coordinates) => {
   highlightCard.value =
@@ -86,8 +87,9 @@ watch([coords, geolocationAccess], async ([coords, geolocationAccess]) => {
 <template>
   <div class="grid lg:gap-4 lg:grid-cols-3 md:grid-cols-1 sm:grid-cols-1 grid-cols-1">
     <div class="min-h-96 lg:order-last">
+      <v-skeleton-loader v-if="loading" type="image@5"></v-skeleton-loader>
       <BaseMap
-        v-if="showMap"
+        v-else
         :center="center"
         :markers="markers"
         :mapProps="{ zoom: 15 }"
@@ -95,7 +97,12 @@ watch([coords, geolocationAccess], async ([coords, geolocationAccess]) => {
       />
     </div>
     <div class="lg:grid-cols-3 md:grid-cols-2 grid gap-4 p-4 col-span-2">
+      <template v-if="loading">
+        <v-skeleton-loader v-for="i in 9" :key="i" type="card" class="border"></v-skeleton-loader>
+      </template>
+
       <BaseCard
+        v-else
         v-for="card in cards"
         :key="card.id"
         :card="card"
