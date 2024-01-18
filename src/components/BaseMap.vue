@@ -1,11 +1,14 @@
 <script setup lang="ts">
+import type { PropType } from 'vue'
+import type { marker } from '@/types'
+
 defineProps({
   center: {
     type: Object,
     required: true
   },
   markers: {
-    type: Array,
+    type: Array as PropType<marker[]>,
     required: true
   },
   mapProps: {
@@ -15,11 +18,6 @@ defineProps({
       zoom: 16,
       'map-type-id': 'terrain'
     })
-  },
-  markerProps: {
-    type: Object,
-    required: false,
-    default: () => ({})
   }
 })
 
@@ -42,15 +40,13 @@ const handleCoordsUpdate = (e: any) => {
       rotateControl: true,
       fullscreenControl: true
     }" -->
+
     <GMapMarker
       v-for="(marker, index) in markers"
       :key="index"
       :position="marker"
       v-bind="{
-        ...markerProps,
-        ...(marker.icon
-          ? { icon: { url: marker.icon, scaledSize: { width: 40, height: 40 } } }
-          : {})
+        ...marker.props
       }"
       @click="handleCoordsUpdate"
       @dragend="handleCoordsUpdate"

@@ -22,3 +22,11 @@ export type cardLocationType = {
 }
 
 export type coordinates = { lat: number; lng: number }
+
+export type marker = coordinates & {
+  props: {
+    clickable?: Boolean
+    draggable?: Boolean
+    icon?: { url: string; scaledSize: { width: number; height: number } }
+  }
+}

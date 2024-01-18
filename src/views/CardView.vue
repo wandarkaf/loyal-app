@@ -47,7 +47,20 @@ const markers = computed(() =>
   cards.value.map((card: any) => ({
     lat: card.location.lat,
     lng: card.location.lng,
-    ...(card.location.icon ? { icon: card.location.icon } : {})
+    props: {
+      clickable: true,
+      ...(card.location.icon
+        ? {
+            icon: {
+              url: card.location.icon,
+              scaledSize:
+                highlightCard.value.id === card.id
+                  ? { width: 60, height: 60 }
+                  : { width: 45, height: 45 }
+            }
+          }
+        : {})
+    }
   }))
 )
 
@@ -71,14 +84,13 @@ watch([coords, geolocationAccess], async ([coords, geolocationAccess]) => {
 </script>
 
 <template>
-  <div class="grid lg:gap-4 lg:grid-cols-3 md:grid-cols-1 sm:grid-cols-1">
+  <div class="grid lg:gap-4 lg:grid-cols-3 md:grid-cols-1 sm:grid-cols-1 grid-cols-1">
     <div class="min-h-96 lg:order-last">
       <BaseMap
         v-if="showMap"
         :center="center"
         :markers="markers"
         :mapProps="{ zoom: 15 }"
-        :markerProps="{ clickable: true }"
         @handleCoordsUpdate="handleCoordsUpdate"
       />
     </div>
@@ -89,7 +101,9 @@ watch([coords, geolocationAccess], async ([coords, geolocationAccess]) => {
         :card="card"
         :canAddLoyalty="card.canAddLoyalty"
         :highlight="highlightCard !== null && highlightCard.id === card.id"
+        :loyalty="{ count: 2 }"
         demo
+        @click="highlightCard = card"
       />
     </div>
   </div>

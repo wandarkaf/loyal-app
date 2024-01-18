@@ -112,8 +112,10 @@ const addLoyalty = async () => {
       </v-chip>
     </template>
     <v-card-title>
-      <v-img v-if="card.logo" :src="card.logo" height="44" />
-      <span v-else class="">{{ card.name }}</span>
+      <div class="flex flex-wrap">
+        <v-img v-if="card.logo" :src="card.logo" height="44" />
+        <span v-else class="">{{ card.name }}</span>
+      </div>
     </v-card-title>
     <v-card-text class="flex items-center h-fit">
       <div v-if="card.maxCount" class="grid grid-cols-5 gap-4">

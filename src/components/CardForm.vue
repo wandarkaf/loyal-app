@@ -59,6 +59,22 @@ const isDisabled = computed(
     isEqual(cardLocation.value, props.card.location)
 )
 
+const marker = computed(() => ({
+  lat: cardLocation.value.lat,
+  lng: cardLocation.value.lng,
+  props: {
+    draggable: true,
+    ...(cardLocation.value.icon
+      ? {
+          icon: {
+            url: cardLocation.value.icon,
+            scaledSize: { width: 45, height: 45 }
+          }
+        }
+      : {})
+  }
+}))
+
 const setInfoKeyValue = (key: string, value: string) => {
   cardInfo.value[key as infoKey] = value
 }
@@ -146,8 +162,7 @@ watch(
           <div class="flex grow">
             <BaseMap
               :center="{ lat: cardLocation.lat, lng: cardLocation.lng }"
-              :markers="[cardLocation]"
-              :markerProps="{ draggable: true }"
+              :markers="[marker]"
               @handleCoordsUpdate="handleCoordsUpdate"
             />
           </div>
